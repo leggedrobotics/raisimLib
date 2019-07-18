@@ -1,0 +1,12 @@
+# Build and Release Folders
+bin/
+bin-debug/
+bin-release/
+build/*
+cmake-build*/*
+.idea/*
+examples/.idea/*
+examples/build/*
+examples/cmake-build*/*
+# Other files and folders
+.settings/
