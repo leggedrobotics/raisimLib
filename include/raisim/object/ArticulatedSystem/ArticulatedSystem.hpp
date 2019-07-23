@@ -277,7 +277,10 @@ class ArticulatedSystem :
 
   /* returns a non-const reference to the collision bodies.*/
   raisim::CollisionSet &getCollisionBodies() { return collisionBodies; }
-
+  raisim::CollisionDefinition &getCollisionBody(const std::string& name) {
+    return *std::find_if(collisionBodies.begin(), collisionBodies.end(),
+                      [name](const raisim::CollisionDefinition& ref){ return ref.name == name; }); }
+                      
   /* You must call this function after you change dynamic parameters. */
   void updateMassInfo();
 
