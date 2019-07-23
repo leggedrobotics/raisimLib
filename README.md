@@ -11,6 +11,11 @@ You must read the [LICENSE](LICENSE.md) before using this software
 ## What is raisim/raisimLib?
 Raisim is a physics engine for rigid-body dynamics simulation. Although it is a general physics engine, it has been mainly used/tested for robotics and reinforcement learning so far. It features an efficient implementation of recursive algorithms for articulated system dynamics (Recursive Newton-Euler and Composite Rigid Body Algorithm). RaisimLib is an exported cmake package of raisim.
  
+## Related repos
+Raisim does not contain a visualizer. So it is not very meaningful by itself for testing. You can use our open-source visualizer [raisimOgre](https://github.com/leggedrobotics/raisimOgre). We will also provide a Unity visualizer in the near future.
+
+If you are using raisim for RL, check out our RL examples [here](https://github.com/leggedrobotics/raisimGym).
+
 ## Install
 
 Please install/save everything locally to prevent any conflicts with other libraries. We will assume that you have a single workspace where you save all repos related to raisim. Here we introduce two variables
