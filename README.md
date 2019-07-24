@@ -54,7 +54,7 @@ target_link_library(YOUR_APP raisim::raisim)
 When you run cmake of your project, let cmake know where raisim is installed, e.g.,
 
 ```commandline
-cmake .. -DCMAKE_PREFIX_PATH=LOCAL_BUILD
+cmake .. -DCMAKE_PREFIX_PATH=$LOCAL_BUILD
 ```
 
 ## Performance benchmark
