@@ -82,7 +82,7 @@ int main() {
 
 ## Examples
 
-### Simulation exapmles
+### Simulation examples
 These example videos are generated with raisimOgre (https://github.com/leggedrobotics/raisimOgre)
 
 ![alt-text-1](https://github.com/leggedrobotics/raisimOgre/blob/master/img/heightmap.gif?raw=true)
