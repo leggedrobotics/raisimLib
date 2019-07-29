@@ -20,8 +20,8 @@ If you are using raisim for RL, check out our RL examples [here](https://github.
 
 Please install/save everything locally to prevent any conflicts with other libraries. We will assume that you have a single workspace where you save all repos related to raisim. Here we introduce two variables
 
-- WORKSPACE: workspace where you clone your git repos
-- LOCAL_BUILD: build directory where you install exported cmake libraries
+- WORKSPACE: workspace where you clone your git repos (e.g., ~/raisim_workspace)
+- LOCAL_BUILD: build directory where you install exported cmake libraries (e.g., ~/raisim_build)
 
 ### Dependencies
 raisim depends on the two open-source libraries
