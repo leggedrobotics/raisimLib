@@ -3,6 +3,9 @@
 ## License
 You must read the [LICENSE](LICENSE.md) before using this software
 
+## Questions
+Feel free to use the github issues as a forum. Raisim does not have a dedicated forum now.
+
 ## Requirements
 - Linux only. support ubuntu 16.04 and 18.04 but might work on other distributions
 - g++, gcc > 6 ([how to install?](https://github.com/jhwangbo/raisimHelp/tree/master#how-to-install-latest-version-of-g))
