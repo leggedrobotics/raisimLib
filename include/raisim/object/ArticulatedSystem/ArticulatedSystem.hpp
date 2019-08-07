@@ -320,7 +320,7 @@ class ArticulatedSystem :
   }
 
   /* set PD gains. It is effective only in the control mode "PD_PLUS_FEEDFORWARD_TORQUE".
-     set zero to unactuated degrees of freemdom*/
+     set zero to unactuated degrees of freemdom. Both have dimensions equal to DOF*/
   void setPdGains(const Eigen::VectorXd &pgain, const Eigen::VectorXd &dgain) {
     kp_ = pgain;
     kd_ = dgain;
