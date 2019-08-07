@@ -118,13 +118,11 @@ class ArticulatedSystem :
    * the dimension should be the same as dof.*/
   void setGeneralizedForce(std::initializer_list<double> tau);
   void setGeneralizedForce(const raisim::VecDyn &tau) { tauFF_ = tau; }
+  void setGeneralizedForce(const Eigen::VectorXd &tau) { tauFF_ = tau; }
 
   /* for both the generalized coordinate and the generalized velocity */
   void getState(Eigen::VectorXd &genco, Eigen::VectorXd &genvel) { genco = gc_.e(); genvel = gv_.e();}
   void setState(const Eigen::VectorXd &genco, const Eigen::VectorXd &genvel);
-
-  /* Generalized forces is defined the same way as the generalized velocity */
-  void setGeneralizedForce(const Eigen::VectorXd &tau) { tauFF_ = tau; }
 
   /* get dynamics properties. Make sure that after integration you call "integrate1()" of the world object before using this method" */
   /* Generalized force is the actual force */
@@ -147,10 +145,10 @@ class ArticulatedSystem :
      It is already computed in "integrate1()" so you don't have to compute again. */
   const VecDyn &getGeneralizedMomentum() const { return generalizedMomentum_; }
 
-  /* returns the sum of potention energy and kinetic energy */
+  /* returns the sum of potential/kinetic energy given the gravitational acceleration*/
   double getEnergy(const Vec<3> &gravity);
 
-  /* returns the kinetic energy */
+  /* returns the kinetic energy. */
   double getKineticEnergy();
 
   /* returns the potential energy (relative to zero height) given the gravity vector */
@@ -280,7 +278,7 @@ class ArticulatedSystem :
   raisim::CollisionDefinition &getCollisionBody(const std::string& name) {
     return *std::find_if(collisionBodies.begin(), collisionBodies.end(),
                       [name](const raisim::CollisionDefinition& ref){ return ref.name == name; }); }
-                      
+
   /* You must call this function after you change dynamic parameters. */
   void updateMassInfo();
 
