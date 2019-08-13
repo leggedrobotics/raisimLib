@@ -50,10 +50,10 @@ class Object {
   virtual void setExternalTorque(size_t localIdx, const Vec<3>& torque) = 0;
   virtual double getMass(size_t localIdx) = 0;
   virtual ObjectType getObjectType() = 0;
-  virtual void getPosition_W(size_t localIdx, Vec<3>& pos_w) = 0;
-  virtual void getVelocity_W(size_t localIdx, Vec<3>& vel_w) = 0;
-  virtual void getOrientation_W(size_t localIdx, Mat<3,3>& rot) = 0;
-  virtual void getPosition_W(size_t localIdx, const Vec<3>& pos_b, Vec<3>& pos_w) = 0;
+  virtual void getPosition(size_t localIdx, Vec<3>& pos_w) = 0;
+  virtual void getVelocity(size_t localIdx, Vec<3>& vel_w) = 0;
+  virtual void getOrientation(size_t localIdx, Mat<3,3>& rot) = 0;
+  virtual void getPosition(size_t localIdx, const Vec<3>& pos_b, Vec<3>& pos_w) = 0;
   std::vector<contact::Contact> &getContacts();
   virtual BodyType getBodyType(size_t localIdx) const { return bodyType_; };
   virtual BodyType getBodyType() const { return bodyType_; };

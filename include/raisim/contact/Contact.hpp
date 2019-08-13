@@ -118,7 +118,7 @@ class Contact {
     return depth_;
   }
 
-  const bool isSelfCollision() const {
+  bool isSelfCollision() const {
     return isSelfCollision_;
   }
 
@@ -126,7 +126,7 @@ class Contact {
     isSelfCollision_ = true;
   }
 
-  const bool skip() const {
+  bool skip() const {
     return skip_;
   }
 

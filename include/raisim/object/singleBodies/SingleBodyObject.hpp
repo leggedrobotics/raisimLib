@@ -62,17 +62,21 @@ class SingleBodyObject : public Object {
     return vel;
   };
 
+  void getLinearVelocity(Vec<3>& linVel) { linVel = linVel_; }
+
   Eigen::Vector3d getAngularVelocity(){
     Eigen::Vector3d vel;
     memcpy(vel.data(), angVel_.ptr(), 3 * sizeof(double));
     return vel;
   };
 
-  void getPosition_W(size_t localIdx, Vec<3>& pos_w) final {
+  void getAngularVelocity(Vec<3>& angVel) { angVel = angVel_; }
+
+  void getPosition(size_t localIdx, Vec<3>& pos_w) {
     pos_w = bodyPosition_;
   }
 
-  void getOrientation_W(size_t localIdx, Mat<3,3>& rot) final {
+  void getOrientation(size_t localIdx, Mat<3,3>& rot) {
     rot = bodyRotationMatrix_;
   }
 
@@ -101,19 +105,25 @@ class SingleBodyObject : public Object {
   GyroscopicMode getGyroscopicMode() const;
   virtual void setPosition(const Eigen::Vector3d &originPosition);
   virtual void setPosition(double x, double y, double z);
+  void setPosition(const Vec<3>&);
   virtual void setOrientation(const Eigen::Quaterniond &quaternion);
+  virtual void setOrientation(const Eigen::Vector4d &quaternion);
   virtual void setOrientation(double w, double x, double y, double z);
   virtual void setOrientation(const Eigen::Matrix3d &rotationMatrix);
+  void setOrientation(const Vec<4>& quat);
   virtual void setPose(const Eigen::Vector3d &originPosition, const Eigen::Quaterniond &quaternion);
+  virtual void setPose(const Eigen::Vector3d &originPosition, const Eigen::Vector4d &quaternion);
   virtual void setPose(const Eigen::Vector3d &originPosition, const Eigen::Matrix3d &rotationMatrix);
+  void setInertia(const Eigen::Matrix3d& inertia);
   void setVelocity(const Eigen::Vector3d &linearVelocity, const Eigen::Vector3d &angularVelocity);
+  void setVelocity(const Vec<3>& linVel, const Vec<3>& angVel) { linVel_ = linVel; angVel_ = angVel; }
   void setVelocity(double dx, double dy, double dz, double wx, double wy, double wz);
   void setExternalForce(size_t localIdx, const Vec<3>& force) final;
   void setExternalTorque(size_t localIdx, const Vec<3>& torque) final;
   void setGyroscopicMode(GyroscopicMode gyroscopicMode);
-  void getPosition_W(size_t localIdx, const Vec<3>& pos_b, Vec<3>& pos_w) final;
-  void getPosition_W(Vec<3>& pos_w);
-  void getVelocity_W(size_t localIdx, Vec<3>& vel_w) final { vel_w = linVel_; }
+  void getPosition(size_t localIdx, const Vec<3>& pos_b, Vec<3>& pos_w) final;
+  void getPosition(Vec<3>& pos_w) { pos_w = bodyPosition_; };
+  void getVelocity(size_t localIdx, Vec<3>& vel_w) final { vel_w = linVel_; }
 
   void preContactSolverUpdate1(const Vec<3> &gravity, double dt) final;
   void preContactSolverUpdate2(const Vec<3> &gravity, double dt) final;
@@ -132,6 +142,7 @@ class SingleBodyObject : public Object {
  protected:
 
   virtual void destroyCollisionBodies(dSpaceID id);
+  void updateWorldInertia();
   void addContactPointVel(size_t pointId, Vec<3>& vel) final;
   void subContactPointVel(size_t pointId, Vec<3>& vel) final;
   void updateGenVelWithImpulse(size_t pointId, const Vec<3>& imp) final;
@@ -185,7 +196,7 @@ class SingleBodyObject : public Object {
 
   // -r (vector from contact point to c.o.m)
   std::vector<Vec<3>> contact2com_;
-  
+
   double mass_, inverseMass_;
   double linearDamping_=0;
   Vec<3> angularDamping_;

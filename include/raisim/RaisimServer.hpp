@@ -305,8 +305,8 @@ class RaisimServer {
             Vec<4> quat;
             Mat<3, 3> bodyRotation, rot;
 
-            ob->getPosition_W(vob.localIdx, pos);
-            ob->getOrientation_W(vob.localIdx, bodyRotation);
+            ob->getPosition(vob.localIdx, pos);
+            ob->getOrientation(vob.localIdx, bodyRotation);
             matvecmul(bodyRotation, vob.offset, offsetInWorld);
             matmul(bodyRotation, vob.rot, rot);
             data_ = set(data_, pos[0] + offsetInWorld[0]);
@@ -327,7 +327,7 @@ class RaisimServer {
         Vec<4> quat;
         std::string name = std::to_string(ob->getIndexInWorld());
         data_ = setString(data_, name);
-        dynamic_cast<SingleBodyObject *>(ob)->getPosition_W(pos);
+        dynamic_cast<SingleBodyObject *>(ob)->getPosition(pos);
         dynamic_cast<SingleBodyObject *>(ob)->getQuaternion(quat);
         data_ = setN(data_, pos.v, 3);
         data_ = setN(data_, quat.v, 4);

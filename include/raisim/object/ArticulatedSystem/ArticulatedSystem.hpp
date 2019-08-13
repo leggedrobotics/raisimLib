@@ -161,7 +161,7 @@ class ArticulatedSystem :
   void printOutFrameNamesInOrder() const;
 
   /* returns position in the world frame of a point defined in a joint frame*/
-  void getPosition_W(size_t bodyIdx, const Vec<3> &point_B, Vec<3> &point_W) final;
+  void getPosition(size_t bodyIdx, const Vec<3> &point_B, Vec<3> &point_W) final;
 
   /* CoordinateFrame contains the pose relative to its parent expressed in the parent frame.
      If you want the position expressed in the world frame,
@@ -175,19 +175,19 @@ class ArticulatedSystem :
 
   /* returns position and orientation in the world frame of a frame defined in the robot description
    * Frames are attached to the joint position */
-  void getFramePosition_W(size_t frameId, Vec<3> &point_W);
-  void getFrameOrientation_W(size_t frameId, Mat<3, 3> &orientation_W);
-  void getFrameVelocity_W(size_t frameId, Vec<3> &vel_W);
-  void getFrameAngularVelocity_W(size_t frameId, Vec<3> &angVel_W);
+  void getFramePosition(size_t frameId, Vec<3> &point_W);
+  void getFrameOrientation(size_t frameId, Mat<3, 3> &orientation_W);
+  void getFrameVelocity(size_t frameId, Vec<3> &vel_W);
+  void getFrameAngularVelocity(size_t frameId, Vec<3> &angVel_W);
 
   /* returns the position of the joint frame */
-  void getPosition_W(size_t localIdx, Vec<3> &pos_w) final { pos_w = jointPos_W[localIdx]; }
+  void getPosition(size_t localIdx, Vec<3> &pos_w) final { pos_w = jointPos_W[localIdx]; }
 
   /* returns the orientation of the joint frame */
-  void getOrientation_W(size_t localIdx, Mat<3, 3> &rot) final { rot = rot_WB[localIdx]; }
+  void getOrientation(size_t localIdx, Mat<3, 3> &rot) final { rot = rot_WB[localIdx]; }
 
   /* returns the linear velocity of the joint frame*/
-  void getVelocity_W(size_t localIdx, Vec<3> &vel_w) final { vel_w = bodyLinearVel_W[localIdx]; }
+  void getVelocity(size_t localIdx, Vec<3> &vel_w) final { vel_w = bodyLinearVel_W[localIdx]; }
 
   /* Unless otherwise specified, Jacobians map the generalized velocities to the linear velocities of the given point
    expressed in the World frame. */
@@ -231,13 +231,13 @@ class ArticulatedSystem :
   }
 
   /* returns the velocity of the point of the jacobian*/
-  void getVelocity_W(const SparseJacobian &jaco, Vec<3> &pointVel);
+  void getVelocity(const SparseJacobian &jaco, Vec<3> &pointVel);
 
   /* returns the velocity of {a point on the body expressed} in the world frame */
-  void getVelocity_W(size_t bodyId, const Vec<3> &posInBodyFrame, Vec<3> &pointVel);
+  void getVelocity(size_t bodyId, const Vec<3> &posInBodyFrame, Vec<3> &pointVel);
 
   /* returns the angular velocity of the body*/
-  void getAngularVelocity_W(size_t bodyId, Vec<3> &angVel);
+  void getAngularVelocity(size_t bodyId, Vec<3> &angVel);
 
   /* returns the index of the body */
   size_t getBodyIdx(const std::string &nm);
