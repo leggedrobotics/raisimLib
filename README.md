@@ -3,6 +3,9 @@
 ## License
 You must read the [LICENSE](LICENSE.md) before using this software
 
+## News
+- As of v0.3.0, all "_W" prefixes in method names are gone. For example, ```getPosition_W()``` is now ```getPosition()```
+
 ## Questions
 Feel free to use the github issues as a forum. Raisim does not have a dedicated forum now.
 
