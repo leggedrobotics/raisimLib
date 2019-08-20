@@ -315,6 +315,8 @@ class ArticulatedSystem :
   }
 
   void setPdTarget(const raisim::VecDyn &posTarget, const raisim::VecDyn &velTarget) {
+    RSFATAL_IF(posTarget.n != gcDim,"position target should have the same dimension as the generalized coordinate")
+    RSFATAL_IF(velTarget.n != dof, "the velocity target should have the same dimension as the degrees of freedom")
     qref_ = posTarget;
     uref_ = velTarget;
   }
@@ -322,12 +324,14 @@ class ArticulatedSystem :
   /* set PD gains. It is effective only in the control mode "PD_PLUS_FEEDFORWARD_TORQUE".
      set zero to unactuated degrees of freemdom. Both have dimensions equal to DOF*/
   void setPdGains(const Eigen::VectorXd &pgain, const Eigen::VectorXd &dgain) {
+    RSFATAL_IF(pgain.rows()!=dof || dgain.rows() != dof, "p/d gains should have the same dimension as the degrees of freedom")
     kp_ = pgain;
     kd_ = dgain;
     dampedDiagonalTermUpdated_ = false;
   }
 
   void setPdGains(const raisim::VecDyn &pgain, const raisim::VecDyn &dgain) {
+    RSFATAL_IF(pgain.n !=dof || dgain.n != dof, "p/d gains should have the same dimension as the degrees of freedom")
     kp_ = pgain;
     kd_ = dgain;
     dampedDiagonalTermUpdated_ = false;
@@ -393,6 +397,12 @@ class ArticulatedSystem :
   void setCollisionObjectShapeParameters(size_t id, const std::vector<double>& params);
   void setCollisionObjectPositionOffset(size_t id, const Vec<3>& posOffset);
   void setCollisionObjectOrientationOffset(size_t id, const Mat<3,3>& oriOffset);
+
+  /* rotor inertia is a term added to the diagonal of the mass matrix. This approximates the rotor inertia. Note that this
+   * is not exactly equivalent in dynamics (due to gyroscopic effect). but it is a commonly used approximation. */
+  void setRotorInertia(const VecDyn& rotorInertia) {
+    rotorInertia_ = rotorInertia;
+  }
 
  protected:
 
