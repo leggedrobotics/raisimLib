@@ -13,6 +13,7 @@ Feel free to use the github issues as a forum. Raisim does not have a dedicated 
 - Linux only. support ubuntu 16.04 and 18.04 but might work on other distributions
 - g++, gcc > 6 ([how to install?](https://github.com/jhwangbo/raisimHelp/tree/master#how-to-install-latest-version-of-g))
 - cmake > 3.10 ([how to install?](https://github.com/jhwangbo/raisimHelp/tree/master#how-to-install-cmake))
+- The binaries contain avx2 instructions. If your CPU is 6-year-old or older, it is likely that raisimLib does not work for you.
 
 ## What is raisim/raisimLib?
 Raisim is a physics engine for rigid-body dynamics simulation. Although it is a general physics engine, it has been mainly used/tested for robotics and reinforcement learning so far. It features an efficient implementation of recursive algorithms for articulated system dynamics (Recursive Newton-Euler and Composite Rigid Body Algorithm). RaisimLib is an exported cmake package of raisim.
