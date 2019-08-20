@@ -3,6 +3,9 @@
 ## License
 You must read the [LICENSE](LICENSE.md) before using this software
 
+## News
+- As of v0.3.0, all "_W" prefixes in method names are gone. For example, ```getPosition_W()``` is now ```getPosition()```
+
 ## Questions
 Feel free to use the github issues as a forum. Raisim does not have a dedicated forum now.
 
@@ -106,7 +109,7 @@ Jemin Hwangbo (Robotic Systems Lab, ETH Zurich) is developing and managing raisi
 
 ## Contact us
 For bug reports/feature requests/instructions, use github issues.
-For private inquiries, please contact us at info.raisim@gmail.com.
+For private inquiries, please contact us at jemin.hwangbo {at} gmail {dot} com.
 
 ## How to post github issue
 Please, whenever possible, include a standalone executable (which depends only on raisim and raisimOgre) reproducing the issue.
