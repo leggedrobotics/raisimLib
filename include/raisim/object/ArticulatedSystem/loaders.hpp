@@ -151,6 +151,7 @@ struct UrdfLinkInertial {
 struct UrdfJoint {
   UrdfJoint() {
     limit.setZero();
+    origin.setZero();
     axis[0] = 1; axis[1] = 0; axis[2] = 0;
   }
   std::string name = "", parent, child;
