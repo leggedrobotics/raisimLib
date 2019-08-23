@@ -278,6 +278,7 @@ class Body {
   std::vector<std::string> visName;
   std::vector<std::string> colName;
   std::vector<std::string> colMeshFileName;
+  std::vector<raisim::Vec<3>> colMeshScale;
 
   friend class ArticulatedSystem;
   double mass_;
@@ -324,7 +325,7 @@ class Child {
     return -1;
   }
 
-  void initCollisionBodies(CollisionSet &collect, std::vector<VisObject>& visCollect, dSpaceID space, std::vector<Mesh>& mesh, const std::string& resDir);
+  void initCollisionBodies(CollisionSet &collect, std::vector<VisObject>& visCollect, std::vector<dTriMeshDataID>& mesh, std::vector<std::vector<float>>& meshVert, std::vector<std::vector<dTriIndex>>& meshIdx, const std::string& resDir);
   void initVisuals(std::vector<VisObject> &collect);
 
   void consumeFixedBodies(std::vector<CoordinateFrame> &frameOfInterest,

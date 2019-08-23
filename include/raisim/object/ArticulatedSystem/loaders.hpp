@@ -118,7 +118,7 @@ inline Shape::Type charToGeom(const char *txt) {
     return Shape::Capsule;
   else if (s == "sphere")
     return Shape::Sphere;
-  else RSFATAL("unsupported shape")
+  else RSFATAL("unsupported shape: "<<s <<". all characters should be lowercase")
 
   return Shape::Box;
 }

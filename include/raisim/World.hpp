@@ -141,7 +141,7 @@ class World {
 
   Compound *addCompound(const std::vector<Compound::CompoundObjectChild> &children,
                         double mass,
-                        Mat<3, 3> inertia,
+                        const Mat<3, 3>& inertia,
                         CollisionGroup collisionGroup = 1,
                         CollisionGroup collisionMask = CollisionGroup(-1));
 
@@ -161,6 +161,14 @@ class World {
                                   Vec<3> pos2_b,
                                   double length,
                                   double stiffness);
+
+  Mesh* addMesh(const std::string& fileName,
+                double mass,
+                const Mat<3, 3>& inertia,
+                const Vec<3>& COM,
+                const std::string& material = "",
+                CollisionGroup collisionGroup = 1,
+                CollisionGroup collisionMask = CollisionGroup(-1));
 
   /* returns nullptr if it doesn't find the object */
   Object *getObject(const std::string &name);

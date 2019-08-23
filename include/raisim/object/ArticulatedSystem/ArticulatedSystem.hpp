@@ -85,6 +85,8 @@ class ArticulatedSystem :
                     std::vector<std::string> jointOrder = std::vector<std::string>(),
                     ArticulatedSystemOption options = ArticulatedSystemOption());
 
+  ~ArticulatedSystem();
+
   /* Returns generalized coordinate of the system */
   const raisim::VecDyn &getGeneralizedCoordinate() { return gc_; }
   void getBaseOrientation(raisim::Vec<4>& quaternion);
@@ -444,9 +446,6 @@ class ArticulatedSystem :
 
   void updateTimeStepIfNecessary(double dt) final;
 
-  /* ode requires to define space for mesh collision bodies. might be removed in the future */
-  void setCollisionSapce(dSpaceID space) { space_ = space; }
-
  private:
 
   void init();
@@ -566,9 +565,10 @@ class ArticulatedSystem :
   MatDyn temp1;
   std::string resourceDir_, robotDefFileName_, robotDefFileUpperDir_;
 
-  // this is necessary for Trimesh
-  dSpaceID space_;
-  std::vector<Mesh> triMeshes_;
+  // for Trimesh
+  std::vector<dTriMeshDataID> meshData_;
+  std::vector<std::vector<float>> meshVertices_;
+  std::vector<std::vector<dTriIndex>> meshIdx_;
 
 };
 
