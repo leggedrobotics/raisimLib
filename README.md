@@ -4,6 +4,8 @@
 You must read the [LICENSE](LICENSE.md) before using this software
 
 ## News
+- Mesh functionality added in RAISIM. Now RAISIM can simulate any trimesh (including non-convex ones).
+ ![alt-text-2](img/monkeys.gif "meshes")
 - As of v0.3.0, all "_W" prefixes in method names are gone. For example, ```getPosition_W()``` is now ```getPosition()```
 
 ## Questions
