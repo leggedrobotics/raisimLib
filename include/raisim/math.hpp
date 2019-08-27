@@ -233,6 +233,9 @@ class Mat {
   double operator [](size_t i) const    {return v[i];}
   double & operator [](size_t i) {return v[i];}
 
+  double operator ()(size_t i, size_t j) const { return v[i+j*n]; }
+  double & operator ()(size_t i, size_t j) { return v[i+j*n]; }
+
   double* ptr() {return &(v[0]);}
   const double* ptr() const {return &(v[0]);}
 
@@ -469,6 +472,9 @@ class MatDyn: public DynamicArray {
 
   double operator [](size_t i) const    {return v[i];}
   double & operator [](size_t i) {return v[i];}
+
+  double operator ()(size_t i, size_t j) const { return v[i+j*n]; }
+  double & operator ()(size_t i, size_t j) { return v[i+j*n]; }
 
   void resize(size_t rows, size_t cols) {
     n = rows;
