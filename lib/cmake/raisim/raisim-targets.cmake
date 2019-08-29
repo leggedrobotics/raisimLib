@@ -51,7 +51,7 @@ if(_IMPORT_PREFIX STREQUAL "/")
 endif()
 
 # Create imported target raisim::raisimODE
-add_library(raisim::raisimODE STATIC IMPORTED)
+add_library(raisim::raisimODE SHARED IMPORTED)
 
 set_target_properties(raisim::raisimODE PROPERTIES
   INTERFACE_COMPILE_DEFINITIONS "dIDEDOUBLE;dIDEDOUBLE"
