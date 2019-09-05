@@ -24,7 +24,7 @@ class Mesh : public SingleBodyObject {
   ~Mesh();
 
   // return mesh file name if it was created with a file. Otherwise, returns an empty string
-  const std::string& getMeshFileName();
+  const std::string& getMeshFileName() { return meshFileName_; }
 
   const std::vector<float>& getVerticies() { return verticies_; }
 

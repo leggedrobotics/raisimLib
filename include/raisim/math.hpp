@@ -230,11 +230,11 @@ class Mat {
 
   Mat() {};
 
-  double operator [](size_t i) const    {return v[i];}
-  double & operator [](size_t i) {return v[i];}
+  inline double operator [](size_t i) const    {return v[i];}
+  inline double & operator [](size_t i) {return v[i];}
 
-  double operator ()(size_t i, size_t j) const { return v[i+j*n]; }
-  double & operator ()(size_t i, size_t j) { return v[i+j*n]; }
+  inline double operator ()(size_t i, size_t j) const { return v[i+j*n]; }
+  inline double & operator ()(size_t i, size_t j) { return v[i+j*n]; }
 
   double* ptr() {return &(v[0]);}
   const double* ptr() const {return &(v[0]);}
@@ -333,8 +333,8 @@ class VecDyn: public DynamicArray {
     memcpy(ptr(), vec.ptr(), n* sizeof(double));
   }
 
-  double operator [](size_t i) const {return v[i];}
-  double & operator [](size_t i) {return v[i];}
+  inline double operator [](size_t i) const {return v[i];}
+  inline double & operator [](size_t i) {return v[i];}
 
   inline double sum() const {
     double sum = 0;
@@ -470,11 +470,11 @@ class MatDyn: public DynamicArray {
     return Eigen::Map<const Eigen::Matrix<double, -1, -1> >(v, n, m);
   }
 
-  double operator [](size_t i) const    {return v[i];}
-  double & operator [](size_t i) {return v[i];}
+  inline double operator [](size_t i) const    {return v[i];}
+  inline double & operator [](size_t i) {return v[i];}
 
-  double operator ()(size_t i, size_t j) const { return v[i+j*n]; }
-  double & operator ()(size_t i, size_t j) { return v[i+j*n]; }
+  inline double operator ()(size_t i, size_t j) const { return v[i+j*n]; }
+  inline double & operator ()(size_t i, size_t j) { return v[i+j*n]; }
 
   void resize(size_t rows, size_t cols) {
     n = rows;

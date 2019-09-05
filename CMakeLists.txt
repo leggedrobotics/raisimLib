@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.10)
-project(raisim VERSION 0.4.2 LANGUAGES CXX)
+project(raisim VERSION 0.4.3 LANGUAGES CXX)
 
 # Include CMake helper modules
 include(GNUInstallDirs)
 
 # Build options
-option(RAISIM_EXAMPLES "Build example applications." FALSE)
+option(RAISIM_EXAMPLE "Build example applications." FALSE)
 
 #==
 # Package installation
