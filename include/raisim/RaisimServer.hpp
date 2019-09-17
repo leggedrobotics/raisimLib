@@ -376,15 +376,24 @@ class RaisimServer {
           break;
 
         case CAPSULE:
-          data_ = set(data_, float(static_cast<Cylinder *>(ob)->getRadius()));
-          data_ = set(data_, float(static_cast<Cylinder *>(ob)->getHeight()));
-          break;
-
-        case HALFSPACE:
+          data_ = set(data_, float(static_cast<Capsule *>(ob)->getRadius()));
           data_ = set(data_, float(static_cast<Capsule *>(ob)->getHeight()));
           break;
 
+        case HALFSPACE:
+          data_ = set(data_, float(static_cast<Ground *>(ob)->getHeight()));
+          break;
+
         case COMPOUND:
+          break;
+
+        case MESH:
+          data_ = setString(data_, static_cast<Mesh *>(ob)->getMeshFileName());
+
+          // TODO mesh scale
+//          data_ = set(data_, vob.scale[0]);
+//          data_ = set(data_, vob.scale[1]);
+//          data_ = set(data_, vob.scale[2]);
           break;
 
         case HEIGHTMAP:
