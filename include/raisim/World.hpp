@@ -127,12 +127,12 @@ class World {
                           CollisionGroup collisionGroup = 1,
                           CollisionGroup collisionMask = CollisionGroup(-1));
 
-  /* @param path to urdf file
+  /* @param path to urdf file or a URDF string
    * @param path to the resource directory. leave it empty ("") if it is the urdf file directory
    * @param collisionGroup
    * @param collisionMask
    * @param option*/
-  ArticulatedSystem *addArticulatedSystem(const std::string &urdfPath,
+  ArticulatedSystem *addArticulatedSystem(const std::string &filePathOrURDFScript,
                                           const std::string &resPath = "",
                                           const std::vector<std::string> &jointOrder = {},
                                           CollisionGroup collisionGroup = 1,

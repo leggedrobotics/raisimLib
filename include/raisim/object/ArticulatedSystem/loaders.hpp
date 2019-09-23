@@ -177,7 +177,7 @@ struct UrdfLink {
 class LoadFromURDF2 {
 
  public:
-  LoadFromURDF2(ArticulatedSystem &system, std::string filePath, std::vector<std::string> jointOrder);
+  LoadFromURDF2(ArticulatedSystem &system, std::string filePath, std::vector<std::string> jointOrder, bool isItAFilePath);
  private:
   void processLinkFromUrdf(const UrdfLink *urdfLink,
                            Child &raiLink,

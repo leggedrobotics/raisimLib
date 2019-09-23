@@ -14,6 +14,7 @@ class HeightMap : public SingleBodyObject {
 
  public:
 
+  /// loading heightmap from a text file
   HeightMap(double centerX,
             double centerY,
             const std::string& raisimHeightMapFileName);

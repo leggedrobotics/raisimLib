@@ -76,11 +76,11 @@ class ArticulatedSystem :
   ArticulatedSystem() {};
 
   /* Do not call this method yourself. use World class to create an Articulated system
-   * @param robot description file (including the full directory)   
+   * @param robot description file (including the full directory) or xml script
    * @param resource directory. if empty, using robot description folder directory
      @param joint order if you want it to be different from the order from the URDF
      @param options. see above options for details*/
-  ArticulatedSystem(const std::string &filePath,
+  ArticulatedSystem(const std::string &filePathOrURDFScript,
                     const std::string &resDir="",
                     std::vector<std::string> jointOrder = std::vector<std::string>(),
                     ArticulatedSystemOption options = ArticulatedSystemOption());
