@@ -38,6 +38,7 @@ endif()
 
 get_target_property(raisim_INCLUDE_DIRS raisim::raisim INTERFACE_INCLUDE_DIRECTORIES)
 get_target_property(raisim_LIBRARIES raisim::raisim INTERFACE_LINK_LIBRARIES)
+list(APPEND raisim_LIBRARIES raisim::raisim)
 
 #==
 # Pacakge configuration check
