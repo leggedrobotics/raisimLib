@@ -4,7 +4,7 @@
 You must read the [LICENSE](LICENSE.md) before using this software
 
 ## News
-- As of v0.5.0, Error reduction mechanisam of Raisim has significantly improved! Please pull. There is no API change
+- As of v0.5.0, The error reduction mechanisam of Raisim has significantly improved! Please pull. No API change
 - As of v0.4.0, RAISIM can simulate any trimesh (including non-convex ones).
  ![alt-text-2](img/monkeys.gif "meshes")
 - As of v0.3.0, all "_W" prefixes in method names are gone. For example, ```getPosition_W()``` is now ```getPosition()```
