@@ -33,6 +33,8 @@
 int main () {
   raisim::World sim;
   sim.setTimeStep(0.002);
+  sim.setERP(0.,0.);
+
   auto checkerBoard = sim.addGround();
   std::vector<std::string> movableJoints = {"LF_HAA", "LF_HFE", "LF_KFE", "RF_HAA", "RF_HFE",
                                             "RF_KFE", "LH_HAA", "LH_HFE", "LH_KFE", "RH_HAA",

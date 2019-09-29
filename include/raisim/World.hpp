@@ -172,6 +172,7 @@ class World {
 
   /* returns nullptr if it doesn't find the object */
   Object *getObject(const std::string &name);
+  raisim::Object* getObject(std::size_t worldIndex) { return objectList_[worldIndex]; }
 
   /* returns nullptr if it doesn't find the constraint */
   Constraints *getConstraint(const std::string &name);
