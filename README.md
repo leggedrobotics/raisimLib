@@ -116,7 +116,7 @@ For bug reports/feature requests/instructions, use github issues.
 For private inquiries, please contact us at jemin.hwangbo {at} gmail {dot} com.
 
 ## Q&A
-Frequently asked questions and their corresponding answers are listed here [here](https://github.com/leggedrobotics/raisimLib/wiki#q--a).
+Frequently asked questions and their corresponding answers are listed [here](https://github.com/leggedrobotics/raisimLib/wiki#q--a).
 
 ## How to post github issue
 Please, whenever possible, include a standalone executable (which depends only on raisim and raisimOgre) reproducing the issue.
