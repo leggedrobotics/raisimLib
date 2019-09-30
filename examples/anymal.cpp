@@ -36,22 +36,22 @@ int main () {
   sim.setERP(0.,0.);
 
   auto checkerBoard = sim.addGround();
-  std::vector<std::string> movableJoints = {"LF_HAA", "LF_HFE", "LF_KFE", "RF_HAA", "RF_HFE",
-                                            "RF_KFE", "LH_HAA", "LH_HFE", "LH_KFE", "RH_HAA",
-                                            "RH_HFE", "RH_KFE"};
 
   Eigen::VectorXd jointConfig(19), jointVelocityTarget(18);
   Eigen::VectorXd jointState(18), jointVel(18), jointPgain(18), jointDgain(18);
+
   jointPgain.setZero();
-  jointDgain.setZero();
-  jointVelocityTarget.setZero();
   jointPgain.tail(12).setConstant(200.0);
+
+  jointDgain.setZero();
   jointDgain.tail(12).setConstant(10.0);
+
+  jointVelocityTarget.setZero();
 
   jointConfig << 0, 0, 0.54, 1, 0, 0, 0, 0.03, 0.4, -0.8, -0.03, 0.4, -0.8, 0.03, -0.4, 0.8, -0.03, -0.4, 0.8;
   jointVel << 0, 0, 0, 0, 0, 0, 0,0,0, 0,0,0, 0,0,0, 0,0,0;
 
-  auto anymal = sim.addArticulatedSystem(std::string(MAKE_STR(RAISIM_EXAMPLE_RESOURCES)) + "/rsc/ANYmal/robot.urdf", "", movableJoints);
+  auto anymal = sim.addArticulatedSystem(std::string(MAKE_STR(RAISIM_EXAMPLE_RESOURCES)) + "/rsc/ANYmal/robot.urdf", "");
   anymal->setState(jointConfig, jointVel);
   anymal->setControlMode(raisim::ControlMode::PD_PLUS_FEEDFORWARD_TORQUE);
   anymal->setPdGains(jointPgain, jointDgain);
