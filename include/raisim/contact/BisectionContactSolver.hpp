@@ -56,8 +56,8 @@ class BisectionContactSolver {
     double alpha_decay = 1.0;
     double error_to_terminate = 1e-8;
     double erp = 0.3;
-    double erp2 = 0.005;
-    int maxIteration = 100;
+    double erp2 = 0.002;
+    int maxIteration = 150;
   };
 
   explicit BisectionContactSolver(double dt) : dt_(dt), dtinv_(1/dt) {
