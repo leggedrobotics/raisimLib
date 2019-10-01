@@ -124,6 +124,12 @@ inline Shape::Type charToGeom(const char *txt) {
 }
 
 struct UrdfBody {
+  UrdfBody() {
+    origin.setZero();
+    rot.setIdentity();
+    scale = {1.,1.,1.};
+  };
+
   Shape::Type shape;
   std::string fileName;
   Vec<3> origin;
