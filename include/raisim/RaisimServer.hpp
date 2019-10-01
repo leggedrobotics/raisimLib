@@ -67,14 +67,16 @@ class RaisimServer {
     REQUEST_CHANGE_REALTIME_FACTOR,
     REQUEST_CONTACT_SOLVER_DETAILS,
     REQUEST_PAUSE,
-    REQUEST_RESUME
+    REQUEST_RESUME,
+    REQUEST_CONTACT_INFOS,
   };
 
   enum ServerMessageType : int {
     INITIALIZATION = 0,
     OBJECT_POSITION_UPDATE = 1,
     STATUS = 2,
-    NO_MESSAGE
+    NO_MESSAGE = 3,
+    CONTACT_INFO_UPDATE = 4,
   };
 
   enum Status : int {
@@ -242,6 +244,10 @@ class RaisimServer {
 
       case REQUEST_CHANGE_REALTIME_FACTOR:
         changeRealTimeFactor();
+        break;
+
+      case REQUEST_CONTACT_INFOS:
+        serializeContacts();
         break;
     }
 
@@ -444,6 +450,33 @@ class RaisimServer {
           }
           break;
       }
+    }
+  }
+
+  void serializeContacts() {
+    std::lock_guard<std::mutex> guard(worldMutex_);
+
+    auto *contactList = world_->getContactProblem();
+
+    // set message type
+    data_ = set(data_, ServerMessageType::CONTACT_INFO_UPDATE);
+
+    // set configuration number.
+    data_ = set(data_, world_->getConfigurationNumber());
+
+    // Data begins
+    data_ = set(data_, contactList->size());
+
+    for (int i = 0; i < contactList->size(); i++) {
+      // contact points
+      data_ = set(data_, contactList->at(i).position_W[0]);
+      data_ = set(data_, contactList->at(i).position_W[1]);
+      data_ = set(data_, contactList->at(i).position_W[2]);
+
+      // contact forces
+      data_ = set(data_, contactList->at(i).imp_i[0]);
+      data_ = set(data_, contactList->at(i).imp_i[1]);
+      data_ = set(data_, contactList->at(i).imp_i[2]);
     }
   }
 
