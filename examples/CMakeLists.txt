@@ -13,6 +13,6 @@ find_package(Eigen3 REQUIRED HINTS ${Eigen3_HINT})
 #==
 
 add_executable(anymal_speed_test anymal.cpp)
-target_link_libraries(anymal_speed_test raisim::raisim tcmalloc)
+target_link_libraries(anymal_speed_test raisim::raisim)
 target_compile_definitions(anymal_speed_test PRIVATE "-DRAISIM_EXAMPLE_RESOURCES=${CMAKE_CURRENT_LIST_DIR}")
 target_include_directories(anymal_speed_test PUBLIC ${EIGEN3_INCLUDE_DIR})
