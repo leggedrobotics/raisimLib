@@ -220,7 +220,7 @@ class World {
                           double restitution,
                           double resThreshold);
 
-  const Vec<3> &getGravity() { return gravity_; }
+  const Vec<3> &getGravity() const { return gravity_; }
   void setERP(double erp, double erp2 = 0);
   void setContactSolverParam(double alpha_init, double alpha_min, double alpha_decay, int maxIter, double threshold);
 
