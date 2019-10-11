@@ -58,7 +58,6 @@ class RaisimServer {
   static constexpr int MAXIMUM_PACKET_SIZE = 4096;
   static constexpr int FOOTER_SIZE = sizeof(char);
   static constexpr int RECEIVE_BUFFER_SIZE = 1024;
-  static constexpr int RAISIM_PORT = 8080;
 
   enum ClientMessageType : int {
     REQUEST_OBJECT_POSITION = 0,
@@ -100,7 +99,7 @@ class RaisimServer {
 
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
-    address.sin_port = htons(RAISIM_PORT);
+    address.sin_port = htons(raisimPort_);
 
     // Forcefully attaching socket to the port 8080
     RSFATAL_IF(bind(server_fd, (struct sockaddr *) &address, sizeof(address)) < 0, "bind failed")
@@ -191,7 +190,8 @@ class RaisimServer {
     return data;
   }
 
-  void launchServer() {
+  void launchServer(int port=8080) {
+    raisimPort_ = port;
     serverThread_ = std::thread(&raisim::RaisimServer::loop, this);
   }
 
@@ -521,6 +521,7 @@ class RaisimServer {
 
   std::mutex worldMutex_;
 
+  int raisimPort_ = 8080;
 };
 
 }

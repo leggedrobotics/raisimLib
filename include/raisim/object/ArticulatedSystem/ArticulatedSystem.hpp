@@ -295,11 +295,11 @@ class ArticulatedSystem :
 
   /* set external forces or torques expressed in the world frame acting on the COM of the body */
   void setExternalForce(size_t localIdx, const Vec<3> &force) final;
-
-  void setExternalTorque(size_t localIdx, const Vec<3> &torque) final;
-
   /* set external force acting on the point specified*/
   void setExternalForce(size_t localIdx, Frame frameOfForce, const Vec<3> &force, Frame frameOfPos, const Vec<3> &pos);
+
+  /* torque is defined in the world frame */
+  void setExternalTorque(size_t localIdx, const Vec<3> &torque_in_world_frame) final;
 
   /* returns the contact point velocity */
   void getContactPointVel(size_t pointId, Vec<3> &vel) final;
@@ -532,8 +532,8 @@ class ArticulatedSystem :
   std::vector<Child> child_;
   std::vector<std::string> bodyName;
   std::vector<SparseJacobian> contactJaco_;
-  std::vector<SparseJacobian> externalForceJaco_;
-  std::vector<raisim::Vec<3>> externalForces_;
+  std::vector<SparseJacobian> externalForceAndTorqueJaco_;
+  std::vector<raisim::Vec<3>> externalForcesAndTorque_;
 
   raisim::CollisionSet collisionBodies;
   std::vector<VisObject> visColObj, visObj;
