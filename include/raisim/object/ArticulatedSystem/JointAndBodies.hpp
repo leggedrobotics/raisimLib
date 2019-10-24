@@ -24,7 +24,6 @@ struct CollisionDefinition {
   CollisionDefinition() = default;
   void setMaterial(const std::string& material);
 
-
   raisim::Mat<3,3> rotOffset;
   raisim::Vec<3> posOffset;
   size_t localIdx;
