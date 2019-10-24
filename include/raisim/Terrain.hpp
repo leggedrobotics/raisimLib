@@ -133,26 +133,52 @@ struct TerrainProperties {
 class TerrainGenerator {
  public:
 
-  static std::vector<double> generatePerlinFractalTerrain(const TerrainProperties& prop) {
-    std::vector<double> height_;
-    height_.resize(prop.xSamples * prop.ySamples);
-    auto bound = calculateFractalBounding(prop);
+  TerrainGenerator() : perlinNoise_(), terrainProperties_() {
+    clear();
+    calculateFractalBounding();
+  };
+
+  TerrainGenerator(const TerrainProperties &terrain_property)
+      : terrainProperties_(terrain_property), perlinNoise_(terrain_property.seed) {
+    clear();
+    calculateFractalBounding();
+  };
+
+  void setSeed(std::uint32_t seed) {
+    perlinNoise_.reseed(seed);
+    clear();
+  }
+
+  void clear() {
+    height_.clear();
+  }
+
+  TerrainProperties &getTerrainProp() {
+    return this->terrainProperties_;
+  }
+
+  std::vector<double> &getHeightMap() {
+    return height_;
+  }
+
+  std::vector<double> &generatePerlinFractalTerrain() {
+    height_.resize(terrainProperties_.xSamples * terrainProperties_.ySamples);
 
     double xScale =
-        prop.frequency * prop.xSize / prop.xSamples; // freq * stepSize
-    double yScale = prop.frequency * prop.ySize / prop.ySamples;
+        terrainProperties_.frequency * terrainProperties_.xSize / terrainProperties_.xSamples; // freq * stepSize
+    double yScale = terrainProperties_.frequency * terrainProperties_.ySize / terrainProperties_.ySamples;
 
     // sample noise
-    for (int y = 0; y < prop.ySamples; y++)
-      for (int x = 0; x < prop.xSamples; x++) {
+    for (int y = 0; y < terrainProperties_.ySamples; y++)
+      for (int x = 0; x < terrainProperties_.xSamples; x++) {
         double x_temp = xScale * x;
         double y_temp = yScale * y;
-        double e = singlePerlinFractalNoise_01(prop, bound, x_temp, y_temp, 0.0)* prop.zScale;
+        double e = singlePerlinFractalNoise_01(x_temp, y_temp, 0.0)* terrainProperties_.zScale;
 
-        if(prop.stepSize > 0){
-          e = (double) noiseUtils::fastFloor(e / prop.stepSize) * prop.stepSize;
+        if(terrainProperties_.stepSize > 0){
+          e = (double) noiseUtils::fastFloor(e / terrainProperties_.stepSize) * terrainProperties_.stepSize;
         }
-        height_[y * prop.xSamples + x] = e;
+        height_[y * terrainProperties_.xSamples + x] = e;
       }
 
     return height_;
@@ -160,51 +186,53 @@ class TerrainGenerator {
 
  private:
   //within [-1.0, 1.0]
-  static double singlePerlinFractalNoise(const TerrainProperties& prop, double bound, double x, double y, double z) {
-    PerlinNoise perlinNoise;
-    double sum = perlinNoise.sample(x, y, z);
+  double singlePerlinFractalNoise(double x, double y, double z) const {
+    double sum = perlinNoise_.sample(x, y, z);
     double amp = 1;
     int i = 0;
 
-    while (++i < prop.fractalOctaves) {
-      x *= prop.fractalLacunarity;
-      y *= prop.fractalLacunarity;
-      z *= prop.fractalLacunarity;
+    while (++i < terrainProperties_.fractalOctaves) {
+      x *= terrainProperties_.fractalLacunarity;
+      y *= terrainProperties_.fractalLacunarity;
+      z *= terrainProperties_.fractalLacunarity;
 
-      amp *= prop.fractalGain;
-      sum += perlinNoise.sample(x, y, z) * amp;
+      amp *= terrainProperties_.fractalGain;
+      sum += perlinNoise_.sample(x, y, z) * amp;
     }
-    return sum * bound;
+    return sum * fractalBound_;
   }
 
   //within [0.0, 1.0]
-  static double singlePerlinFractalNoise_01(const TerrainProperties& prop, double bound, double x, double y, double z) {
-    PerlinNoise perlinNoise;
-    double sum = perlinNoise.sample(x, y, z);
+  double singlePerlinFractalNoise_01(double x, double y, double z) const {
+    double sum = perlinNoise_.sample(x, y, z);
     double amp = 1;
     int i = 0;
 
-    while (++i < prop.fractalOctaves) {
-      x *= prop.fractalLacunarity;
-      y *= prop.fractalLacunarity;
-      z *= prop.fractalLacunarity;
+    while (++i < terrainProperties_.fractalOctaves) {
+      x *= terrainProperties_.fractalLacunarity;
+      y *= terrainProperties_.fractalLacunarity;
+      z *= terrainProperties_.fractalLacunarity;
 
-      amp *= prop.fractalGain;
-      sum += perlinNoise.sample(x, y, z) * amp;
+      amp *= terrainProperties_.fractalGain;
+      sum += perlinNoise_.sample(x, y, z) * amp;
     }
-    return sum * bound * 0.5 + 0.5;
+    return sum * fractalBound_ * 0.5 + 0.5;
   }
 
-  static double calculateFractalBounding(const TerrainProperties& prop) {
-    double amp = prop.fractalGain;
+  void calculateFractalBounding() {
+    double amp = terrainProperties_.fractalGain;
     double ampFractal = 1.0f;
-    for (int i = 1; i < prop.fractalOctaves; i++) {
+    for (int i = 1; i < terrainProperties_.fractalOctaves; i++) {
       ampFractal += amp;
-      amp *= prop.fractalGain;
+      amp *= terrainProperties_.fractalGain;
     }
-    return 1.0f / ampFractal;
+    fractalBound_ = 1.0f / ampFractal;
   }
 
+  TerrainProperties terrainProperties_;
+  std::vector<double> height_;
+  PerlinNoise perlinNoise_;
+  double fractalBound_;
 };
 
 } // namespace raisim
