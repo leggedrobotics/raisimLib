@@ -330,6 +330,10 @@ class ArticulatedSystem :
   /* frames are attached to every joint coordinate */
   void printOutFrameNamesInOrder() const;
 
+  /* getMovableJointNames. Careful! the order doesn't correspond to dof since there are
+   * joints with multiple dof's */
+  const std::vector<std::string>& getMovableJointNames() const {return movableJointNames; };
+
   /* returns position in the world frame of a point defined in a joint frame*/
   void getPosition(size_t bodyIdx, const Vec<3> &point_B, Vec<3> &point_W) final;
 
@@ -577,7 +581,8 @@ class ArticulatedSystem :
     rotorInertia_ = rotorInertia;
   }
 
-  /* This joint index corresponds to the dimensions of the generalized velocity */
+  /* This joint indices are in the same order as the elements of the generalized velocity
+   * However, some joints have multiple degrees of freedom and they are not equal*/
   Joint::Type getJointType(size_t jointIndex) {
     return jointType[jointIndex];
   }
@@ -706,6 +711,8 @@ class ArticulatedSystem :
  protected:
   std::vector<Child> rootChild_;
   std::vector<std::string> bodyName;
+  std::vector<std::string> movableJointNames;
+
   std::vector<SparseJacobian> contactJaco_;
   std::vector<SparseJacobian> externalForceAndTorqueJaco_;
   std::vector<raisim::Vec<3>> externalForcesAndTorque_;
