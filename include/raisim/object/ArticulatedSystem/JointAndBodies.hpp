@@ -9,61 +9,151 @@
 #include "ode/ode.h"
 #include "raisim/math.hpp"
 #include "raisim/object/singleBodies/Mesh.hpp"
+#include <unordered_map>
 
 namespace raisim {
 
-struct CollisionDefinition {
-  CollisionDefinition(const raisim::Mat<3,3>& rotOffsetI, const raisim::Vec<3>& posOffsetI,
-      size_t localIdxI, dGeomID colObjI, std::string nameI) :
-  rotOffset(rotOffsetI),
-  posOffset(posOffsetI),
-  localIdx(localIdxI),
-  colObj(colObjI),
-  name(std::move(nameI)) {}
+class ArticulatedSystem;
+class World;
 
-  CollisionDefinition() = default;
-  void setMaterial(const std::string& material);
+namespace urdf {
+class LoadFromURDF2;
+}
 
-
-  raisim::Mat<3,3> rotOffset;
-  raisim::Vec<3> posOffset;
-  size_t localIdx;
-  dGeomID colObj;
-  std::string name;
-};
-
-typedef std::vector<CollisionDefinition> CollisionSet;
-
+/* shapes that raisim supports */
 namespace Shape {
-enum Type : int {
+enum Type :
+    int {
   Box = 0,
   Cylinder,
   Sphere,
   Mesh,
   Capsule,
-  Cone
+  Cone // cone is not currently supported
 };
 }
 
-struct VisObject {
-  raisim::Mat<3,3> rot;
-  raisim::Vec<3> offset;
-  size_t localIdx;
-  Shape::Type shape;
-  Vec<4> color;
-  std::string fileName;
-  std::vector<double> visShapeParam;
-  std::string material;
+/* collision definition that is stored in Articulated System.
+ CollisionBody stores how the collision body should be displayed as well. This only stores physics part */
+struct CollisionDefinition {
+  CollisionDefinition(const raisim::Mat<3, 3> &rotOffsetI, const raisim::Vec<3> &posOffsetI,
+                      size_t localIdxI, dGeomID colObjI, std::string nameI) :
+      rotOffset(rotOffsetI),
+      posOffset(posOffsetI),
+      localIdx(localIdxI),
+      colObj(colObjI),
+      name(std::move(nameI)) {}
+
+ public:
+  friend class raisim::ArticulatedSystem;
+  friend class raisim::World;
+
+ protected:
+  CollisionDefinition() = default;
+
+ public:
+  void setMaterial(const std::string &material);
+  const std::string &getMaterial();
+
+  raisim::Mat<3, 3> rotOffset;
+  raisim::Vec<3> posOffset;
   std::string name;
-  Vec<3> scale;
+  size_t localIdx;
+
+ protected:
+  dGeomID colObj;
+
+};
+
+typedef std::vector<CollisionDefinition> CollisionSet;
+
+/// visualization definition created by a user or URDF
+struct VisObject {
+
+  /* to add primitive
+   * vis_shape: choices, Box, Cylinder, Sphere, Capsule
+   * vis_shapeParam: params associated with shape,
+   *      for sphere: {radius},
+   *      for Box: {lx, ly, lz},
+   *      for Cylinder: {radius, height},
+   *      for Capsule: {radius, height},
+   * vis_origin: position of the visualized object
+   * vis_rotMat: orientation of the visualized object
+   * vis_color: color, should be ignored if material is specified,
+   * vis_name: name of the visualized body,
+   * vis_material: material */
+  VisObject(Shape::Type vis_shape,
+            const std::vector<double> &vis_shapeParam,
+            const raisim::Vec<3> &vis_origin,
+            const raisim::Mat<3, 3> &vis_rotMat,
+            const raisim::Vec<4> &vis_color,
+            const std::string &vis_name,
+            const std::string &vis_material) :
+      shape(vis_shape), visShapeParam(vis_shapeParam), offset(vis_origin), rot(vis_rotMat),
+      color(vis_color), scale({1., 1., 1.}), material(vis_material), name(vis_name) {
+    RSFATAL_IF(vis_shape == Shape::Type::Mesh, "This constructor is for primitive shapes")
+  }
+
+  /* to add mesh
+   * vis_meshFile: file location relative to the resource directory of the articulated system,
+   * vis_origin: position of the visualized object
+   * vis_rotMat: orientation of the visualized object
+   * vis_color: color, should be ignored if material is specified,
+   * vis_scale: for mesh only, scaling size,
+   * vis_name: name of the visualized body,
+   * vis_material: material */
+  VisObject(const std::string &vis_meshFile,
+            const std::string &vis_name,
+            const raisim::Vec<3> &vis_origin,
+            const raisim::Mat<3, 3> &vis_rotMat,
+            const raisim::Vec<4> &vis_color,
+            const raisim::Vec<3> &vis_scale,
+            const std::string &vis_material) :
+      shape(Shape::Type::Mesh), offset(vis_origin), rot(vis_rotMat), color(vis_color),
+      scale(vis_scale), fileName(vis_meshFile), material(vis_material), name(vis_name) {}
+
+  /* vis_shape: choices, Box, Cylinder, Sphere, mesh, Capsule
+   * vis_shapeParam: params associated with shape,
+   *      for sphere: {radius},
+   *      for Box: {lx, ly, lz},
+   *      for Cylinder: {radius, height},
+   *      for mesh: None
+   *      for Capsule: {radius, height},
+   * vis_origin: position of the visualized object
+   * vis_rotMat: orientation of the visualized object
+   * vis_color: color, should be ignored if material is specified,
+   * vis_scale: for mesh only, scaling size,
+   * vis_meshFile: file location relative to the resource directory of the articulated system,
+   * vis_name: name of the visualized body,
+   * vis_material: material */
+  VisObject(Shape::Type vis_shape,
+            const std::vector<double> &vis_shapeParam,
+            const raisim::Vec<3> &vis_origin,
+            const raisim::Mat<3, 3> &vis_rotMat,
+            const raisim::Vec<4> &vis_color,
+            const raisim::Vec<3> &vis_scale,
+            const std::string &vis_meshFile,
+            const std::string &vis_name,
+            const std::string &vis_material) :
+      shape(vis_shape), visShapeParam(vis_shapeParam), offset(vis_origin), rot(vis_rotMat),
+      color(vis_color), scale(vis_scale), fileName(vis_meshFile), name(vis_name), material(vis_material) {
+    RSFATAL_IF(shape == Shape::Type::Mesh && fileName.empty(), "Provide a valid mesh file name")
+  }
+
+  Shape::Type shape;
+  std::vector<double> visShapeParam;
+  raisim::Vec<3> offset;
+  raisim::Mat<3, 3> rot;
+  raisim::Vec<4> color;
+  raisim::Vec<3> scale;
+  std::string fileName;
+  std::string name;
+  size_t localIdx;
+  std::string material;
 };
 
 class Joint {
  public:
-
-  Joint() {
-    rot.setIdentity();
-  }
 
   enum Type {
     FIXED,
@@ -73,23 +163,36 @@ class Joint {
     FLOATING
   };
 
+  Joint() {
+    rot.setIdentity();
+  }
+
+  /* if upper and lower bounds of the limit are the same, the limit is ignored */
+  Joint(const Vec<3> &joint_axis,
+        const Vec<3> &joint_pos_P,
+        const Mat<3, 3> &joint_rot,
+        const Vec<2> &joint_limit,
+        Type joint_type,
+        const std::string &joint_name) :
+      axis(joint_axis), pos_P(joint_pos_P), rot(joint_rot), limit(joint_limit), type(joint_type), name(joint_name) {}
+
   void jointAxis(std::initializer_list<double> a) {
-    axis_[0] = *(a.begin());
-    axis_[1] = *(a.begin() + 1);
-    axis_[2] = *(a.begin() + 2);
+    axis[0] = *(a.begin());
+    axis[1] = *(a.begin() + 1);
+    axis[2] = *(a.begin() + 2);
   }
 
   void jointPosition(std::initializer_list<double> p) {
-    pos_P_[0] = *(p.begin());
-    pos_P_[1] = *(p.begin() + 1);
-    pos_P_[2] = *(p.begin() + 2);
+    pos_P[0] = *(p.begin());
+    pos_P[1] = *(p.begin() + 1);
+    pos_P[2] = *(p.begin() + 2);
   }
 
-  void jointPosition(const Vec<3>& p) {
-    pos_P_ = p;
+  void jointPosition(const Vec<3> &p) {
+    pos_P = p;
   }
 
-  size_t getGcDim () {
+  size_t getGcDim() {
     switch (type) {
       case FIXED:
         return 0;
@@ -104,7 +207,13 @@ class Joint {
     return 0;
   }
 
-  size_t getGvDim () {
+  static Joint getFloatingBaseJoint() {
+    Joint joint;
+    joint.type = Joint::Type::FLOATING;
+    return joint;
+  }
+
+  size_t getGvDim() {
     switch (type) {
       case FIXED:
         return 0;
@@ -119,12 +228,12 @@ class Joint {
     return 0;
   }
 
-  Vec<3> axis_;
-  Vec<3> pos_P_;
-  Mat<3,3> rot;
+  Vec<3> axis;
+  Vec<3> pos_P;
+  Mat<3, 3> rot;
   Vec<2> limit;
   Type type;
-
+  std::string name;
 };
 
 class CoordinateFrame {
@@ -133,27 +242,116 @@ class CoordinateFrame {
   Vec<3> position;
   size_t parentId;
   std::string name, parentName;
-  bool isChild = false; // child is the first body after movable joint. All fixed bodies attached to a child is not a child
+  bool isChild =
+      false; // child is the first body after movable joint. All fixed bodies attached to a child is not a child
+};
+
+struct CollisionBody {
+  /* to add a primitive
+   * col_shape: choices, Box, Cylinder, Sphere, mesh, Capsule
+   * col_shapeParam: params associated with shape,
+   *      for sphere: {radius},
+   *      for Box: {lx, ly, lz},
+   *      for Cylinder: {radius, height},
+   *      for mesh: None
+   *      for Capsule: {radius, height},
+   * col_origin: position of the collision object
+   * col_rotMat: orientation of the collision object
+   * col_name: name of the visualized body,
+   * col_material: collision material that defines contact physics
+   * col_visualizedMaterial: how the collision body should be visualized */
+  CollisionBody(Shape::Type col_shape,
+                const std::vector<double> &col_shapeParam,
+                const raisim::Vec<3> &col_origin,
+                const raisim::Mat<3, 3> &col_rotMat,
+                const std::string &col_name,
+                const std::string &col_material,
+                const std::string &col_visualizedMaterial) :
+      shape(col_shape), shapeParam(col_shapeParam), offset(col_origin),
+      rot(col_rotMat), name(col_name), materialName(col_material),
+      collisionVisualizationMaterial(col_visualizedMaterial) {
+    RSFATAL_IF(col_shape == Shape::Type::Mesh, "This constructor is for primitive shapes")
+  }
+
+  /* to add mesh
+   * col_meshFile: file location relative to the resource directory of the articulated system,
+   * col_origin: position of the collision object
+   * col_rotMat: orientation of the collision object
+   * col_scale: for mesh only, scaling size,
+   * col_name: name of the visualized body,
+   * col_material: collision material that defines contact physics
+   * col_visualizedMaterial: how the collision body should be visualized */
+  CollisionBody(const std::string &col_meshFileName,
+                const raisim::Vec<3> &col_origin,
+                const raisim::Mat<3, 3> &col_rotMat,
+                const raisim::Vec<3> &col_meshScale,
+                const std::string &col_name,
+                const std::string &col_material,
+                const std::string &col_visualizedMaterial) :
+      shape(Shape::Type::Mesh), scale(col_meshScale), offset(col_origin),
+      rot(col_rotMat), name(col_name), materialName(col_material),
+      collisionVisualizationMaterial(col_visualizedMaterial), colMeshFileName(col_meshFileName) {}
+
+  Shape::Type shape;
+  raisim::Vec<3> scale;
+  std::vector<double> shapeParam;
+  raisim::Vec<3> offset;
+  raisim::Mat<3, 3> rot;
+  std::string name;
+  std::string materialName; /// collision property
+  std::string collisionVisualizationMaterial; /// collision property
+  std::string colMeshFileName;
+
+  /* col_shape: choices, Box, Cylinder, Sphere, mesh, Capsule
+   * col_shapeParam: params associated with shape,
+   *      for sphere: {radius},
+   *      for Box: {lx, ly, lz},
+   *      for Cylinder: {radius, height},
+   *      for mesh: None
+   *      for Capsule: {radius, height},
+   * col_origin: position of the collision object
+   * col_rotMat: orientation of the collision object
+   * col_scale: for mesh only, scaling size,
+   * col_name: name of the visualized body,
+   * col_material: collision material that defines contact physics
+   * col_visualizedMaterial: how the collision body should be visualized
+   * col_meshFile: file location relative to the resource directory of the articulated system */
+  CollisionBody(Shape::Type col_shape,
+                const std::vector<double> &col_shapeParam,
+                const raisim::Vec<3> &col_origin,
+                const raisim::Mat<3, 3> &col_rotMat,
+                const raisim::Vec<3> &col_meshScale,
+                const std::string &col_name,
+                const std::string &col_material,
+                const std::string &col_visualizedMaterial,
+                const std::string &col_meshFileName) :
+      shape(col_shape), scale(col_meshScale), shapeParam(col_shapeParam), offset(col_origin),
+      rot(col_rotMat), name(col_name), materialName(col_material),
+      collisionVisualizationMaterial(col_visualizedMaterial), colMeshFileName(col_meshFileName) {}
 };
 
 class Body {
+  friend class ArticulatedSystem;
 
  public:
+
   Body() {
     mass_ = 0;
     inertia_.setZero();
-    com_.setZero();
-    rotMat_.setZero();
-    rotMat_[0] = 1;
-    rotMat_[4] = 1;
-    rotMat_[8] = 1;
+    rotMat_.setIdentity();
   }
 
-  void mass(double mass) { mass_ = mass; }
+  Body(double mass, const Mat<3, 3> &inertia, const Vec<3> &comPos, const Mat<3, 3> &rotMat) :
+      mass_(mass), inertia_(inertia), com_(comPos), rotMat_(rotMat) {}
 
-  double &mass() { return mass_; }
+  Body(double mass, const Mat<3, 3> &inertia, const Vec<3> &comPos, const Vec<3> &rpy) :
+      mass_(mass), inertia_(inertia), com_(comPos) { setRPY(rpy); }
 
-  void inertia(std::initializer_list<double> inertia) {
+  void setMass(double mass) { mass_ = mass; }
+
+  double &getMass() { return mass_; }
+
+  void setInertia(std::initializer_list<double> inertia) {
 //    LOG_IF(INFO, inertia.size() != 6) << "Provide 6 elements for inertia matrix";
     inertia_[0] = *(inertia.begin());
     inertia_[1] = *(inertia.begin() + 1);
@@ -168,7 +366,7 @@ class Body {
     inertia_[8] = *(inertia.begin() + 5);
   }
 
-  void inertia(Vec<3> inertia) {
+  void setInertia(Vec<3> inertia) {
 //    LOG_IF(INFO, inertia.size() != 6) << "Provide 6 elements for inertia matrix";
     inertia_[0] = inertia[0];
     inertia_[1] = 0;
@@ -183,7 +381,7 @@ class Body {
     inertia_[8] = inertia[2];
   }
 
-  void inertia(Vec<6> inertia) {
+  void setInertia(Vec<6> inertia) {
 //    LOG_IF(INFO, inertia.size() != 6) << "Provide 6 elements for inertia matrix";
     inertia_[0] = inertia[0];
     inertia_[1] = inertia[1];
@@ -204,99 +402,96 @@ class Body {
     mass_ = 0;
   }
 
-  Mat<3, 3> &inertia() { return inertia_; }
+  Mat<3, 3> &getInertia() { return inertia_; }
 
-  void com(std::initializer_list<double> com) {
-//    LOG_IF(FATAL, com.size() != 3) << "Provide 3 elements for inertia matrix";
-    com_[0] = *(com.begin());
-    com_[1] = *(com.begin() + 1);
-    com_[2] = *(com.begin() + 2);
-  }
-
-  void com(Vec<3> com) {
+  void setCom(const Vec<3> &com) {
 //    LOG_IF(FATAL, com.size() != 3) << "Provide 3 elements for inertia matrix";
     com_ = com;
   }
 
-  Vec<3> &com() { return com_; }
+  Vec<3> &getCom() { return com_; }
 
-  Vec<3> &RPY() { return rollPitchYaw; }
+  Vec<3> &getRPY() { return rollPitchYaw; }
 
-  void RPY(const Vec<3> &rpy) {
+  void setRPY(const Vec<3> &rpy) {
     rollPitchYaw = rpy;
     rpyToRotMat_intrinsic(rpy, rotMat_);
   }
 
-  Mat<3, 3> &rotationMatrix() { return rotMat_; }
-
-  void collisionOrientation(const Vec<3> &rpy) {
-    collisionRotMat.emplace_back();
-    rpyToRotMat_intrinsic(rpy, collisionRotMat.back());
-  }
-
-  void collisionOrientation(const Mat<3,3> &rotMat) {
-    collisionRotMat.push_back(rotMat);
-  }
-
-  void visOrientation(const Vec<3> &rpy) {
-    visRotMat.emplace_back();
-    rpyToRotMat_intrinsic(rpy, visRotMat.back());
-  }
+  Mat<3, 3> &getRotMat() { return rotMat_; }
 
   void clearColAndVis() {
-    colshape.clear();
-    colObjOrigin.clear();
-    collisionRotMat.clear();
-    visshape.clear();
-    visShapeParam.clear();
-    visObjOrigin.clear();
-    visRotMat.clear();
-    meshFileNames.clear();
-    visScale.clear();
-    materialName.clear();
-    colShapeParam.clear();
-    visColor.clear();
-    visName.clear();
-    colName.clear();
+    colObj.clear();
+    visObj.clear();
   }
 
-  std::vector<Shape::Type> colshape;
-  std::vector<raisim::Vec<3> > colObjOrigin;
-  std::vector<raisim::Mat<3, 3> > collisionRotMat;
+  void addCollisionObject(Shape::Type shape,
+                          const std::vector<double> &param,
+                          const raisim::Vec<3> &origin,
+                          const raisim::Mat<3, 3> &rot,
+                          const raisim::Vec<3> &scale,
+                          const std::string &colName,
+                          const std::string &materialName, /// collision property
+                          const std::string &collisionVisualizedMaterial, /// collision property
+                          const std::string &meshFileName) {
+    colObj.emplace_back(shape,
+                        param,
+                        origin,
+                        rot,
+                        scale,
+                        colName,
+                        materialName,
+                        collisionVisualizedMaterial,
+                        meshFileName);
+  }
+
+  void addVisualObject(Shape::Type shape,
+                       const std::vector<double> &shapeParam,
+                       const raisim::Vec<3> &origin,
+                       const raisim::Mat<3, 3> &rotMat,
+                       const raisim::Vec<4> &color,
+                       const raisim::Vec<3> &scale,
+                       const std::string &meshFileNames,
+                       const std::string &visName,
+                       const std::string &material) {
+    visObj.emplace_back(shape,
+                        shapeParam,
+                        origin,
+                        rotMat,
+                        color,
+                        scale,
+                        meshFileNames,
+                        visName,
+                        material);
+  }
+
+  std::vector<CollisionBody> colObj;
+  std::vector<VisObject> visObj;
+
   Vec<3> combinedColPos;
   Mat<3, 3> combinedColRotMat;
-  std::vector<Shape::Type> visshape;
-  std::vector<std::vector<double> > visShapeParam;
-  std::vector<raisim::Vec<3> > visObjOrigin;
-  std::vector<raisim::Mat<3, 3> > visRotMat;
-  std::vector<raisim::Vec<4> > visColor;
-  std::vector<raisim::Vec<3> > visScale;
-  std::vector<std::string> meshFileNames;
-  std::vector<std::vector<double> > colShapeParam;
-  std::vector<std::string> materialName; /// collision property
-  std::vector<std::string> collisionVisualizedMaterial; /// collision property
-  std::vector<std::string> visName;
-  std::vector<std::string> colName;
-  std::vector<std::string> colMeshFileName;
-  std::vector<raisim::Vec<3>> colMeshScale;
 
-  friend class ArticulatedSystem;
   double mass_;
-  Mat<3, 3> inertia_, rotMat_, collisionRotMat_;
+  Mat<3, 3> inertia_, rotMat_;
   Vec<3> com_, rollPitchYaw;
-  bool isColliding = false;
 };
 
 class Child {
  public:
+  friend class raisim::ArticulatedSystem;
+  friend class raisim::urdf::LoadFromURDF2;
 
-  size_t bodyIdx;
-  size_t parentIdx;
+  Child(const Body &body, const Joint &joint, const std::string &name) {
+    Child::body = body;
+    Child::joint = joint;
+    Child::name = name;
+  }
+
+  Child() {}
+
   Body body;
   Joint joint;
-  bool registered = false;
-  std::string name, parentName;
-  std::string parentJointName;
+  std::string name;
 
   size_t numberOfBodiesFromHere() {
     size_t nbody = 1;
@@ -325,14 +520,34 @@ class Child {
     return -1;
   }
 
-  void initCollisionBodies(CollisionSet &collect, std::vector<VisObject>& visCollect, std::vector<dTriMeshDataID>& mesh, std::vector<std::vector<float>>& meshVert, std::vector<std::vector<dTriIndex>>& meshIdx, const std::string& resDir);
+  void initCollisionBodies(CollisionSet &collect,
+                           std::vector<VisObject> &visCollect,
+                           std::vector<dTriMeshDataID> &mesh,
+                           std::vector<std::vector<float>> &meshVert,
+                           std::vector<std::vector<dTriIndex>> &meshIdx,
+                           const std::string &resDir);
   void initVisuals(std::vector<VisObject> &collect);
 
-  void consumeFixedBodies(std::vector<CoordinateFrame> &frameOfInterest,
-                          std::vector<std::string> &jointsNames);
+  void consumeFixedBodies(std::vector<CoordinateFrame> &frameOfInterest);
+
+  void addChild(const Child &childNode) {
+    if (childNode.joint.type == Joint::Type::FIXED) {
+      fixedBodies.push_back(childNode);
+    } else if (childNode.joint.type != Joint::Type::FLOATING) {
+      child.push_back(childNode);
+    } else {
+      RSFATAL("Only the root can have a floating joint")
+    }
+  }
 
   std::vector<Child> child;
   std::vector<Child> fixedBodies;
+
+ protected:
+  size_t bodyIdx;
+  size_t parentIdx;
+  std::string parentBodyName;
+  bool registered = false;
 };
 
 }

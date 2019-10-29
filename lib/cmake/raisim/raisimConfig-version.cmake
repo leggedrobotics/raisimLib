@@ -7,7 +7,7 @@
 # PACKAGE_VERSION_COMPATIBLE if the current version is >= requested version.
 # The variable CVF_VERSION must be set before calling configure_file().
 
-set(PACKAGE_VERSION "0.5.0")
+set(PACKAGE_VERSION "0.6.0")
 
 if(PACKAGE_VERSION VERSION_LESS PACKAGE_FIND_VERSION)
   set(PACKAGE_VERSION_COMPATIBLE FALSE)
@@ -16,12 +16,6 @@ else()
   if(PACKAGE_FIND_VERSION STREQUAL PACKAGE_VERSION)
     set(PACKAGE_VERSION_EXACT TRUE)
   endif()
-endif()
-
-
-# if the installed project requested no architecture check, don't perform the check
-if("FALSE")
-  return()
 endif()
 
 # if the installed or the using project don't have CMAKE_SIZEOF_VOID_P set, ignore it:

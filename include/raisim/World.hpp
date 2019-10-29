@@ -139,6 +139,13 @@ class World {
                                           CollisionGroup collisionMask = CollisionGroup(-1),
                                           ArticulatedSystemOption options = ArticulatedSystemOption());
 
+  /**/
+  ArticulatedSystem *addArticulatedSystem(const Child& child,
+                                          const std::string &resPath = "",
+                                          CollisionGroup collisionGroup = 1,
+                                          CollisionGroup collisionMask = CollisionGroup(-1),
+                                          ArticulatedSystemOption options = ArticulatedSystemOption());
+
   Compound *addCompound(const std::vector<Compound::CompoundObjectChild> &children,
                         double mass,
                         const Mat<3, 3>& inertia,

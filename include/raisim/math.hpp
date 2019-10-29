@@ -206,6 +206,11 @@ class Vec {
     return *this;
   }
 
+  static inline Vec<n> getZeros() {
+    Vec<n> zero; zero.setZero();
+    return zero;
+  }
+
 };
 
 template<size_t n>
@@ -302,6 +307,12 @@ class Mat {
   inline Mat<n,m>& operator=(const DynamicArray &rhs) {
     memcpy(ptr(), rhs.ptr(), n * m * sizeof(double));
     return *this;
+  }
+
+  static inline Mat<n,n> getIdentity() {
+    static_assert(n==m, "getIdentity only works for square matrices");
+    Mat<n,n> identity; identity.setIdentity();
+    return identity;
   }
 };
 
