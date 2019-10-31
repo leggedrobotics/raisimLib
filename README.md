@@ -4,6 +4,7 @@
 You must read the [LICENSE](LICENSE.md) before using this software
 
 ## News
+- v0.6.0 introduces new api that lets users create an ArticulatedSystem programatically. Check out the example in raisimOgre!
 - In v0.5.0, the error reduction mechanisam of Raisim is significantly improved! Please pull. No API change
 - As of v0.4.0, RAISIM can simulate any trimesh (including non-convex ones).
  ![alt-text-2](img/monkeys.gif "meshes")
