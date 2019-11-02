@@ -21,7 +21,7 @@ Please install/save everything locally to prevent any conflicts with other libra
 ### Dependencies
 raisim depends on the two open-source libraries
 
-- eigen (sudo apt-get install libeigen-dev)
+- eigen (sudo apt-get install libeigen3-dev)
 - png (included in raisim. Automatically installed if you install raisim) 
 
 ### raisim
