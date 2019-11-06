@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(raisim VERSION 0.5.0 LANGUAGES CXX)
+project(raisim VERSION 0.6.0 LANGUAGES CXX)
 
 # Include CMake helper modules
 include(GNUInstallDirs)
