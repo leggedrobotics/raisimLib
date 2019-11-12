@@ -13,13 +13,10 @@ class Mesh : public SingleBodyObject {
 
  public:
 
-  explicit Mesh(const std::string &filename, dSpaceID space, double mass, const Mat<3, 3> &inertia, const Vec<3> &COM);
-  explicit Mesh(const std::vector<float> &verticies,
-                const std::vector<unsigned int> &idx,
-                dSpaceID space,
-                double mass,
-                const Mat<3, 3> &inertia,
-                const Vec<3> &COM);
+  explicit Mesh(const std::string &filename, dSpaceID space, double mass, const Mat<3, 3> &inertia, const Vec<3> &COM,
+                double scale=1.0);
+  explicit Mesh(const std::vector<float> &verticies, const std::vector<unsigned int> &idx, dSpaceID space, double mass,
+                const Mat<3, 3> &inertia, const Vec<3> &COM, double scale=1.0);
 
   ~Mesh();
 
@@ -30,7 +27,9 @@ class Mesh : public SingleBodyObject {
 
   const std::vector<unsigned int>& getIndicies() { return idx_; }
 
-  static void loadObj(const std::string &filename, std::vector<float>& verticies, std::vector<dTriIndex>& idx);
+  double getScale() { return scale_ ; };
+
+  static void loadObj(const std::string &filename, std::vector<float>& verticies, std::vector<dTriIndex>& idx, double scale=1);
 
  protected:
 
@@ -43,6 +42,7 @@ class Mesh : public SingleBodyObject {
   std::vector<float> verticies_;
   dTriMeshDataID Data_;
   std::string meshFileName_;
+  double scale_ = 1.0;
 
 };
 

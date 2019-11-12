@@ -28,8 +28,27 @@
 #include "configure.hpp"
 
 namespace raisim {
+  struct RayCollisionList {
+    size_t size = 0;
+    dContactGeom geoms[200];
+  };
 
 class World {
+
+  struct XmlObjectClass
+  {
+    ObjectType type;
+    std::string name;
+    std::string material;
+    std::string filepath;
+    double mass = 0;
+    CollisionGroup collisionGroup;
+    CollisionGroup collisionMask;
+
+    Vec<3> size = {0, 0, 0};
+    Vec<3> com = {0, 0, 0,};
+    Mat<3,3> inertia;
+  };
 
  public:
 
@@ -169,11 +188,12 @@ class World {
                                   double length,
                                   double stiffness);
 
-  Mesh* addMesh(const std::string& fileName,
+  Mesh *addMesh(const std::string &fileName,
                 double mass,
-                const Mat<3, 3>& inertia,
-                const Vec<3>& COM,
-                const std::string& material = "",
+                const Mat<3, 3> &inertia,
+                const Vec<3> &COM,
+                double scale = 1,
+                const std::string &material = "",
                 CollisionGroup collisionGroup = 1,
                 CollisionGroup collisionMask = CollisionGroup(-1));
 
@@ -189,6 +209,16 @@ class World {
 
   /* this number is updated everytime that you add or remove object. */
   unsigned long getConfigurationNumber() { return objectConfiguration_; }
+
+  /* ray test
+   * Returns the internal reference of the ray collision list
+   * it contains the geoms (position, normal, object world/local id) and the number of intersections
+   * This returns all collisions of the ray, no just the closest one */
+  const RayCollisionList& rayTest(const Eigen::Vector3d& start,
+                                  const Eigen::Vector3d& direction,
+                                  double length,
+                                  CollisionGroup collisionGroup = 1,
+                                  CollisionGroup collisionMask = CollisionGroup(-1));
 
   /** to dynamically remove objects */
   void removeObject(Object *obj);
@@ -238,7 +268,9 @@ class World {
   raisim::contact::BisectionContactSolver &getContactSolver() { return solver_; }
   const raisim::contact::BisectionContactSolver &getContactSolver() const { return solver_; }
 
- protected:
+  const std::string &getConfigFile() { return configFile_; };
+
+protected:
   void contactProblemUpdate(Object *objectA);
   void addCollisionObject(dGeomID colObj,
                           size_t localIdx,
@@ -270,10 +302,18 @@ class World {
   double timeStep_ = 0.005;
   double worldTime_ = 0.;
 
+  std::string configFile_;
+
   // bookkeeping
   unsigned long stepsTaken_ = 0, objectConfiguration_ = 0;
   void updateObjConfiig() { objectConfiguration_++; }
   void updateStepCount() { stepsTaken_++; }
+
+  // xml class
+  std::unordered_map<std::string, XmlObjectClass> xmlObjectClasses;
+
+  // ray test
+  RayCollisionList rayContact_;
 };
 
 } // raisim

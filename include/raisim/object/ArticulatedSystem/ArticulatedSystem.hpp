@@ -425,6 +425,9 @@ class ArticulatedSystem :
   /* returns the degrees of freedom */
   size_t getDOF() const;
 
+  /* returns the dim of generalized velocity (do the same thing with getDOF) */
+  size_t getGeneralizedVelocityDim() const;
+
   /* returns the dim of generalized coordinate */
   size_t getGeneralizedCoordinateDim() const;
 
