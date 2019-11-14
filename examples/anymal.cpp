@@ -28,6 +28,7 @@
 
 #include "raisim/World.hpp"
 #include "benchmarkCommon.hpp"
+#include "helper.hpp"
 #include <chrono>
 
 int main () {
@@ -51,7 +52,7 @@ int main () {
   jointConfig << 0, 0, 0.54, 1, 0, 0, 0, 0.03, 0.4, -0.8, -0.03, 0.4, -0.8, 0.03, -0.4, 0.8, -0.03, -0.4, 0.8;
   jointVel << 0, 0, 0, 0, 0, 0, 0,0,0, 0,0,0, 0,0,0, 0,0,0;
 
-  auto anymal = sim.addArticulatedSystem(std::string(MAKE_STR(RAISIM_EXAMPLE_RESOURCES)) + "/rsc/ANYmal/robot.urdf", "");
+  auto anymal = sim.addArticulatedSystem(raisim::loadResource("anymal/anymal.urdf"));
   anymal->setState(jointConfig, jointVel);
   anymal->setControlMode(raisim::ControlMode::PD_PLUS_FEEDFORWARD_TORQUE);
   anymal->setPdGains(jointPgain, jointDgain);

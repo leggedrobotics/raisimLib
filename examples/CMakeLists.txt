@@ -8,11 +8,25 @@ project(raisim_examples LANGUAGES CXX)
 find_package(raisim CONFIG REQUIRED)
 find_package(Eigen3 REQUIRED HINTS ${Eigen3_HINT})
 
+set(resource_directory ${CMAKE_CURRENT_SOURCE_DIR}/rsc/)
+
 #==
 # Build Targets
 #==
 
-add_executable(anymal_speed_test anymal.cpp)
-target_link_libraries(anymal_speed_test raisim::raisim)
-target_compile_definitions(anymal_speed_test PRIVATE "-DRAISIM_EXAMPLE_RESOURCES=${CMAKE_CURRENT_LIST_DIR}")
-target_include_directories(anymal_speed_test PUBLIC ${EIGEN3_INCLUDE_DIR})
+function(create_executable app_name file_name)
+    add_executable(${app_name} ${file_name})
+    target_link_libraries(${app_name} PUBLIC raisim::raisim Eigen3::Eigen pthread)
+    target_include_directories(${app_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+    target_compile_definitions(${app_name} PRIVATE "-DEXAMPLE_ROBOT_RESOURCE_DIR=${resource_directory}")
+endfunction()
+
+create_executable(anymal_speed_test anymal.cpp)
+
+# server examples
+create_executable(primitives server/primitives.cpp)
+create_executable(meshes server/meshes.cpp)
+create_executable(anymal server/anymal.cpp)
+create_executable(balls server/balls.cpp)
+create_executable(atlas server/atlas.cpp)
+create_executable(heightmap server/heightmap.cpp)
