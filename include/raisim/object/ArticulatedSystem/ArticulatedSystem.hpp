@@ -142,6 +142,7 @@ class ArticulatedSystem :
   };
 
   class JointRef {
+   public:
     JointRef(size_t frameId, ArticulatedSystem* system) :
         system_(system), frameId_(frameId) {
       isMovable_ = system_->getFrames()[frameId].isChild;
@@ -354,6 +355,12 @@ class ArticulatedSystem :
   void getFrameVelocity(size_t frameId, Vec<3> &vel_W);
   void getFrameAngularVelocity(size_t frameId, Vec<3> &angVel_W);
 
+  void getFramePosition(const CoordinateFrame& frame, Vec<3> &point_W);
+  void getFrameOrientation(const CoordinateFrame& frame, Mat<3, 3> &orientation_W);
+  void getFrameVelocity(const CoordinateFrame& frame, Vec<3> &vel_W);
+  void getFrameAngularVelocity(const CoordinateFrame& frame, Vec<3> &angVel_W);
+
+
   /* returns the position of the joint frame */
   void getPosition(size_t localIdx, Vec<3> &pos_w) final { pos_w = jointPos_W[localIdx]; }
 
@@ -475,8 +482,12 @@ class ArticulatedSystem :
   void setExternalForce(size_t localIdx, const Vec<3> &force) final;
   /* set external force acting on the point specified*/
   void setExternalForce(size_t localIdx, Frame frameOfForce, const Vec<3> &force, Frame frameOfPos, const Vec<3> &pos);
+  /* set external force acting at the origin of the CoordinateFrame. If Frame is body, the force is expressed in
+   * the CoordinateFrame. If the frame is World, the force is expressed in the world frame. Parent frame does not
+   * make sense here*/
+  void setExternalForce(size_t localIdx, size_t frameIdx, Frame frameOfForce, const Vec<3> &force);
 
-  /* torque is defined in the world frame */
+  /* torque is expressed in the world frame */
   void setExternalTorque(size_t localIdx, const Vec<3> &torque_in_world_frame) final;
 
   /* returns the contact point velocity */
@@ -588,6 +599,16 @@ class ArticulatedSystem :
    * However, some joints have multiple degrees of freedom and they are not equal*/
   Joint::Type getJointType(size_t jointIndex) {
     return jointType[jointIndex];
+  }
+
+  /* returns reference object of the joint*/
+  JointRef getJoint(const std::string& name) {
+    return {size_t(std::find(movableJointNames.begin(), movableJointNames.end(), name)-movableJointNames.begin()), this};
+  }
+
+  /* returns reference object of the body*/
+  LinkRef getLink(const std::string& name) {
+    return {size_t(std::find(bodyName.begin(), bodyName.end(), name)-bodyName.begin()), this};
   }
 
  protected:
