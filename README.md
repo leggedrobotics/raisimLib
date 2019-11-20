@@ -4,7 +4,8 @@
 You must read the [LICENSE](LICENSE.md) before using this software
 
 ## News
-- As of Nov 12th, you can perform a ray collision test (e.g., to emulate laser sensor). It returns position, normal and the object ID. PLEASE NOTE THAT IT IS NOT A STABLE FEATURE NOW. I WILL MAKE IT STABLE WITHIN A WEEK.
+- Many remote rendering examples are added. You can use [raisimUnity](https://github.com/leggedrobotics/raisimUnity) to visualize them
+- As of Nov 12th, you can perform a ray collision test (e.g., to emulate laser sensor). It returns position, normal and the object ID.
 - v0.6.0 introduces new api that lets users create an ArticulatedSystem programatically. Check out the example in raisimOgre!
 - In v0.5.0, the error reduction mechanisam of Raisim is significantly improved! Please pull. No API change
 - As of v0.4.0, RAISIM can simulate any trimesh (including non-convex ones).
