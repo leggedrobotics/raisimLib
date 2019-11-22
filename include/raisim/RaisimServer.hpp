@@ -585,16 +585,27 @@ class RaisimServer final {
     // Data begins
     data_ = set(data_, contactList->size());
 
-    for (int i = 0; i < contactList->size(); i++) {
-      // contact points
-      data_ = set(data_, contactList->at(i).position_W[0]);
-      data_ = set(data_, contactList->at(i).position_W[1]);
-      data_ = set(data_, contactList->at(i).position_W[2]);
+    for(auto *obj: world_->getObjList()) {
+      for (auto &contact: obj->getContacts()) {
+        if (!contact.isObjectA() && contact.getPairObjectBodyType() != raisim::BodyType::STATIC) continue;
 
-      // contact forces
-      data_ = set(data_, contactList->at(i).imp_i[0]);
-      data_ = set(data_, contactList->at(i).imp_i[1]);
-      data_ = set(data_, contactList->at(i).imp_i[2]);
+        // contact points
+        auto contactPos = contact.getPosition();
+        data_ = set(data_, contactPos[0]);
+        data_ = set(data_, contactPos[1]);
+        data_ = set(data_, contactPos[2]);
+
+        // contact forces
+        auto *impulseB = contact.getImpulse();
+        auto contactFrame = contact.getContactFrame();
+
+        Vec<3> impulseW;
+        raisim::matvecmul(contactFrame, *impulseB, impulseW);
+
+        data_ = set(data_, impulseW[0]);
+        data_ = set(data_, impulseW[1]);
+        data_ = set(data_, impulseW[2]);
+      }
     }
   }
 
