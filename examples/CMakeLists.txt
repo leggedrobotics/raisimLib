@@ -22,13 +22,14 @@ function(create_executable app_name file_name)
     target_compile_definitions(${app_name} PRIVATE "-DEXAMPLE_ROBOT_RESOURCE_DIR=${resource_directory}")
 endfunction()
 
-create_executable(anymal_speed_test anymal.cpp)
+# benchmark examples
+create_executable(anymal_speed_test src/benchmark/anymal.cpp)
 
 # server examples
-create_executable(primitives server/primitives.cpp)
-create_executable(meshes server/meshes.cpp)
-create_executable(anymal server/anymal.cpp)
-create_executable(balls server/balls.cpp)
-create_executable(atlas server/atlas.cpp)
-create_executable(heightmap server/heightmap.cpp)
-create_executable(hibernate server/hibernate.cpp)
+create_executable(primitives src/server/primitives.cpp)
+create_executable(meshes src/server/meshes.cpp)
+create_executable(anymal src/server/anymal.cpp)
+create_executable(balls src/server/balls.cpp)
+create_executable(atlas src/server/atlas.cpp)
+create_executable(heightmap src/server/heightmap.cpp)
+create_executable(hibernate src/server/hibernate.cpp)
