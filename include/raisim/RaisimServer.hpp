@@ -112,6 +112,7 @@ class RaisimServer final {
     REQUEST_CONFIG_XML,
     REQUEST_INITIALIZE_VISUALS,
     REQUEST_VISUAL_POSITION,
+    REQUEST_SERVER_STATUS,
   };
 
   enum ServerMessageType : int {
@@ -248,6 +249,14 @@ class RaisimServer final {
     updateReady_ = true;
   }
 
+  void hibernate() {
+    state_ = STATUS_HIBERNATING;
+  }
+
+  void wakeup() {
+    state_ = STATUS_RENDERING;
+  }
+
   void killServer() {
     terminateRequested_ = true;
     serverThread_.join();
@@ -268,6 +277,8 @@ class RaisimServer final {
 
   Visuals& addVisualSphere(const std::string name, double radius, double colorR = 1, double colorG = 1, double colorB = 1,
                            double colorA = 1, const std::string &material = "", bool glow = true, bool shadow = false) {
+    if(_visualObjects.find(name) != _visualObjects.end()) RSFATAL("Duplicated visual object name: " + name)
+    updateVisualConfig();
     _visualObjects[name] = Visuals();
     _visualObjects[name].type = Visuals::VisualType::VisualSphere;
     _visualObjects[name].name = name;
@@ -280,6 +291,8 @@ class RaisimServer final {
 
   Visuals& addVisualBox(const std::string name, double xLength, double yLength, double zLength, double colorR = 1,
                         double colorG = 1, double colorB = 1, double colorA = 1, const std::string &material = "", bool glow = true, bool shadow = false) {
+    if(_visualObjects.find(name) != _visualObjects.end()) RSFATAL("Duplicated visual object name: " + name)
+    updateVisualConfig();
     _visualObjects[name] = Visuals();
     _visualObjects[name].type = Visuals::VisualType::VisualBox;
     _visualObjects[name].name = name;
@@ -294,6 +307,8 @@ class RaisimServer final {
 
   Visuals& addVisualCylinder(const std::string name, double radius, double length, double colorR = 1, double colorG = 1,
                              double colorB = 1, double colorA = 1, const std::string &material = "", bool glow = true, bool shadow = false) {
+    if(_visualObjects.find(name) != _visualObjects.end()) RSFATAL("Duplicated visual object name: " + name)
+    updateVisualConfig();
     _visualObjects[name] = Visuals();
     _visualObjects[name].type = Visuals::VisualType::VisualCylinder;
     _visualObjects[name].name = name;
@@ -307,6 +322,8 @@ class RaisimServer final {
 
   Visuals& addVisualCapsule(const std::string name, double radius, double length, double colorR = 1, double colorG = 1,
                             double colorB = 1, double colorA = 1, const std::string &material = "", bool glow = true, bool shadow = false) {
+    if(_visualObjects.find(name) != _visualObjects.end()) RSFATAL("Duplicated visual object name: " + name)
+    updateVisualConfig();
     _visualObjects[name] = Visuals();
     _visualObjects[name].type = Visuals::VisualType::VisualCapsule;
     _visualObjects[name].name = name;
@@ -320,12 +337,20 @@ class RaisimServer final {
 
   Visuals& getVisualObject(std::string name)
   {
+    if(_visualObjects.find(name) == _visualObjects.end()) RSFATAL("Visual object with name \"" + name + "\" doesn't exist.")
     return _visualObjects[name];
   }
 
 //  void addVisualMesh() {
 //    _visualObjects.emplace(name, new VisualObject);
 //  }
+
+  void removeVisualObject(std::string name)
+  {
+    if(_visualObjects.find(name) == _visualObjects.end()) RSFATAL("Visual object with name \"" + name + "\" doesn't exist.")
+    updateVisualConfig();
+    _visualObjects.erase(name);
+  }
 
  private:
 
@@ -369,6 +394,10 @@ class RaisimServer final {
       case REQUEST_VISUAL_POSITION:
         serializeVisualWorld();
         break;
+
+      case REQUEST_SERVER_STATUS:
+        // Do nothing
+        break;
     }
 
     bool eom = false;
@@ -387,7 +416,7 @@ class RaisimServer final {
         eom = true;
       }
     }
-    return state_ == STATUS_RENDERING;
+    return state_ == STATUS_RENDERING || state_ == STATUS_HIBERNATING;
   }
 
   void serializeWorld() {
@@ -579,9 +608,6 @@ class RaisimServer final {
     // set message type
     data_ = set(data_, ServerMessageType::CONTACT_INFO_UPDATE);
 
-    // set configuration number.
-    data_ = set(data_, world_->getConfigurationNumber());
-
     // Data begins
     data_ = set(data_, contactList->size());
 
@@ -767,6 +793,9 @@ class RaisimServer final {
     // set message type
     data_ = set(data_, ServerMessageType::VISUAL_INITILIZATION);
 
+    // set configuration number
+    data_ = set(data_, visualConfiguration_);
+
     // Data begins
     data_ = set(data_, _visualObjects.size());
 
@@ -827,6 +856,7 @@ class RaisimServer final {
 
     // set message type
     data_ = set(data_, ServerMessageType::VISUAL_POSITION_UPDATE);
+    data_ = set(data_, visualConfiguration_);
 
     // Data begins
     data_ = set(data_, _visualObjects.size());
@@ -885,6 +915,8 @@ class RaisimServer final {
   std::mutex worldMutex_;
 
   std::unordered_map<std::string, Visuals> _visualObjects;
+  unsigned long visualConfiguration_ = 0;
+  void updateVisualConfig() { visualConfiguration_++; }
 
   int raisimPort_ = 8080;
 };
