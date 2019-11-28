@@ -1,0 +1,12 @@
+language: cpp
+
+dist: bionic
+
+before_install:
+  - sudo apt-get update
+  - sudo apt-get -y install libeigen3-dev
+
+script: 
+  - mkdir build && cd build
+  - cmake .. -DRAISIM_EXAMPLE=ON -DCMAKE_BUILD_TYPE=Release
+  - make
