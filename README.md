@@ -1,5 +1,7 @@
 # RAISIM, A PHYSICS ENGINE FOR ROBOTICS AND AI RESEARCH
 
+![travis ci](https://travis-ci.org/leggedrobotics/raisimLib.svg?branch=master)
+
 ## License
 You must read the [LICENSE](LICENSE.md) before using this software
 
