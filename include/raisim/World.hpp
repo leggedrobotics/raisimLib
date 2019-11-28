@@ -57,6 +57,7 @@ class World {
 
   explicit World();
   explicit World(const std::string &configFile);
+  void exportToXml(const std::string &xmlFileName);
 
   World(const World &world) = delete;
 

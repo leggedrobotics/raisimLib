@@ -141,6 +141,10 @@ class Vec {
     return ConstEigenVecn(v, n, 1);
   }
 
+  size_t size() const {
+    return n;
+  }
+
   inline void operator/=(double val) {
     for (size_t i = 0; i < n; i++)
       v[i] /= val;
@@ -244,6 +248,10 @@ class Mat {
   double* ptr() {return &(v[0]);}
   const double* ptr() const {return &(v[0]);}
 
+  size_t size() const {
+    return n*m;
+  }
+
   inline void setConstant(double constant) {
     for(size_t i=0; i< n*m; i++)
         v[i] = constant;
@@ -337,6 +345,10 @@ class VecDyn: public DynamicArray {
 
   VecDyn(size_t size){
     resize(size);
+  }
+
+  size_t size() const {
+    return n;
   }
 
   VecDyn(const VecDyn& vec){
@@ -471,6 +483,10 @@ class MatDyn: public DynamicArray {
   MatDyn(const MatDyn& mat){
     resize(mat.n, mat.m);
     memcpy(ptr(), mat.ptr(), n*m* sizeof(double));
+  }
+
+  size_t size() const {
+    return n;
   }
 
   Eigen::Map<Eigen::Matrix<double, -1, -1> > e() {
