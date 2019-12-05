@@ -571,9 +571,6 @@ class ArticulatedSystem :
   // name of the directory containing the robot definition file
   const std::string &getRobotDescriptionfTopDirName() { return robotDefFileUpperDir_; }
 
-  // if the object was instantiated with raw urdf string, it returns the same string
-  const std::string &getRobotDescription() { return robotDef_; }
-
   /* change the base position and orientation of the base. */
   /* eigen methods. _e is for removing abiguity */
   void setBasePos_e(const Eigen::Vector3d& pos);
@@ -772,7 +769,7 @@ class ArticulatedSystem :
   VecDyn generalizedMomentum_;
   VecDyn temp, temp2;
   MatDyn temp1;
-  std::string resourceDir_, robotDefFileName_, robotDefFileUpperDir_, robotDef_;
+  std::string resourceDir_, robotDefFileName_, robotDefFileUpperDir_;
 
   // for Trimesh
   std::vector<dTriMeshDataID> meshData_;
