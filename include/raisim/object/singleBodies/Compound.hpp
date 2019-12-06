@@ -23,6 +23,10 @@ class Compound : public SingleBodyObject {
 
   Compound(const std::vector<CompoundObjectChild>& list, double mass, Mat<3,3> inertia);
 
+  const std::vector<CompoundObjectChild>& getObjList () { return list_; };
+
+  const std::vector<dGeomID>& getCollisionObjectList () { return co; };
+
  protected:
 
   std::vector<dGeomID> co;

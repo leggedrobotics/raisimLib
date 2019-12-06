@@ -55,12 +55,51 @@ class HeightMap : public SingleBodyObject {
 
   ~HeightMap() final;
 
+  void updateCollision() final;
+
+  void setPosition(const Eigen::Vector3d &originPosition) final {
+    SingleBodyObject::setPosition(originPosition);
+    updateCollision();
+  }
+
+  void setPosition(double x, double y, double z) {
+    SingleBodyObject::setPosition(x, y, z);
+    updateCollision();
+  }
+
+  void setPosition(const Vec<3>& pos) {
+    SingleBodyObject::setPosition(pos);
+    updateCollision();
+  }
+
+  void setOrientation(const Eigen::Quaterniond &quaternion) {
+    SingleBodyObject::setOrientation(quaternion);
+    updateCollision();
+  }
+
+  void setOrientation(const Eigen::Vector4d &quaternion) {
+    SingleBodyObject::setOrientation(quaternion);
+    updateCollision();
+  }
+
+  void setOrientation(double w, double x, double y, double z) {
+    SingleBodyObject::setOrientation(w, x, y, z);
+    updateCollision();
+  }
+
+  void setOrientation(const Eigen::Matrix3d &rotationMatrix) {
+    SingleBodyObject::setOrientation(rotationMatrix);
+    updateCollision();
+  }
+
  private:
   void generateTerrain(const TerrainProperties &terrainProperties);
   std::vector<double> height_;
   dHeightfieldDataID heightFieldData_;
   double centerX_, centerY_, sizeX_, sizeY_;
   size_t xSamples_, ySamples_;
+  Mat<3,3> rotOffset_;
+
 };
 
 }

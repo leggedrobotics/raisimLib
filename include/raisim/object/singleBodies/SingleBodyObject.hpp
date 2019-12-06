@@ -105,12 +105,31 @@ class SingleBodyObject : public Object {
   GyroscopicMode getGyroscopicMode() const;
   virtual void setPosition(const Eigen::Vector3d &originPosition);
   virtual void setPosition(double x, double y, double z);
-  void setPosition(const Vec<3>&);
-  virtual void setOrientation(const Eigen::Quaterniond &quaternion);
-  virtual void setOrientation(const Eigen::Vector4d &quaternion);
-  virtual void setOrientation(double w, double x, double y, double z);
-  virtual void setOrientation(const Eigen::Matrix3d &rotationMatrix);
-  void setOrientation(const Vec<4>& quat);
+  virtual void setPosition(const Vec<3>& pos);
+  virtual void setOrientation(const Eigen::Quaterniond &quaternion) {
+    bodyQuaternion_ = {quaternion.w(),
+                       quaternion.x(),
+                       quaternion.y(),
+                       quaternion.z()};
+    updateOrientation();
+  }
+  virtual void setOrientation(const Eigen::Vector4d &quaternion) {
+    bodyQuaternion_.e() = quaternion;
+    updateOrientation();
+  }
+  virtual void setOrientation(double w, double x, double y, double z) {
+    bodyQuaternion_ = {w, x, y, z};
+    updateOrientation();
+  }
+  virtual void setOrientation(const Eigen::Matrix3d &rotationMatrix) {
+    Eigen::Quaterniond quaternion(rotationMatrix);
+    setOrientation(quaternion);
+  }
+  virtual void setOrientation(const Vec<4>& quat) {
+    bodyQuaternion_ = quat;
+    updateOrientation();
+  }
+
   virtual void setPose(const Eigen::Vector3d &originPosition, const Eigen::Quaterniond &quaternion);
   virtual void setPose(const Eigen::Vector3d &originPosition, const Eigen::Vector4d &quaternion);
   virtual void setPose(const Eigen::Vector3d &originPosition, const Eigen::Matrix3d &rotationMatrix);
@@ -148,6 +167,7 @@ class SingleBodyObject : public Object {
   void updateGenVelWithImpulse(size_t pointId, const Vec<3>& imp) final;
   void updateTimeStep(double dt) final {};
   void updateTimeStepIfNecessary(double dt) final {};
+  void updateOrientation();
 
   dGeomID collisionObject_;
 
