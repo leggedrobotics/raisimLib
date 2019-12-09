@@ -99,7 +99,7 @@ class DynamicArray{
   friend class raisim::MatDyn;
 
   ~DynamicArray() {
-#ifdef __Apple__
+#ifdef __APPLE__
     aligned_free(v);
 #else
     free(v);
@@ -113,8 +113,8 @@ class DynamicArray{
 
  private:
   void allocate(size_t size) {
-#ifdef __Apple__
-    aligned_free(v);
+#ifdef __APPLE__
+    if(v) aligned_free(v);
 #else
     free(v);
 #endif

@@ -147,6 +147,10 @@ class World {
                           CollisionGroup collisionGroup = 1,
                           CollisionGroup collisionMask = CollisionGroup(-1));
 
+  HeightMap *addHeightMap(HeightMap* heightmapToBeCloned,
+                          CollisionGroup collisionGroup = 1,
+                          CollisionGroup collisionMask = CollisionGroup(-1));
+
   /* @param path to urdf file or a URDF string
    * @param path to the resource directory. leave it empty ("") if it is the urdf file directory
    * @param collisionGroup
