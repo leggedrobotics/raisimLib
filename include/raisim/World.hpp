@@ -147,7 +147,7 @@ class World {
                           CollisionGroup collisionGroup = 1,
                           CollisionGroup collisionMask = CollisionGroup(-1));
 
-  HeightMap *addHeightMap(HeightMap* heightmapToBeCloned,
+  HeightMap *addHeightMap(const HeightMap* heightmapToBeCloned,
                           CollisionGroup collisionGroup = 1,
                           CollisionGroup collisionMask = CollisionGroup(-1));
 
