@@ -118,10 +118,12 @@ class ArticulatedSystem :
       return system_->getInertia()[localId_];
     }
 
+    /* set center of mass position in parent frame */
     void setComPositionInParentFrame(const Vec<3>& com) {
       system_->getLinkCOM()[localId_] = com;
     }
 
+    /* get center of mass position in parent frame */
     const Vec<3>& getComPositionInParentFrame() {
       return system_->getLinkCOM()[localId_];
     }
@@ -166,7 +168,8 @@ class ArticulatedSystem :
       system_->getFrameOrientation(frameId_, orientation);
     }
 
-    /// this method is useful
+    /* Joint coordinate can be multiple dimensional vector (for a spherical joint)
+     * or 1D vector */
     void getJointCoordinate(VecDyn& coordinate) {
       coordinate = system_->getGeneralizedCoordinate()[gvIndx_];
     }
@@ -490,7 +493,8 @@ class ArticulatedSystem :
   /* torque is expressed in the world frame */
   void setExternalTorque(size_t localIdx, const Vec<3> &torque_in_world_frame) final;
 
-  /* returns the contact point velocity */
+  /* returns the contact point velocity
+   * pointId: index of the contact vector which can be obtained by getContacts()*/
   void getContactPointVel(size_t pointId, Vec<3> &vel) final;
 
   /* control methods. They can be specified in the description file as well */
