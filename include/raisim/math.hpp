@@ -127,7 +127,7 @@ class Vec {
  public:
   union {
     double v[n];
-    std::aligned_storage<n, 32> alignment_only;
+    std::aligned_storage<n*sizeof(double), 32> alignment_only;
   };
 
   typedef Eigen::Map<Eigen::Matrix<double, n, 1> > EigenVecn;
