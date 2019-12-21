@@ -147,20 +147,30 @@ class ArticulatedSystem :
    public:
     JointRef(size_t frameId, ArticulatedSystem* system) :
         system_(system), frameId_(frameId) {
+      auto& toGvIndex = system_->getMappingFromBodyIndexToGeneralizedVelocityIndex();
+      auto& toGcIndex = system_->getMappingFromBodyIndexToGeneralizedCoordinateIndex();
+
       isMovable_ = system_->getFrames()[frameId].isChild;
 
-      if(isMovable_)
-        gvIndx_ = system_->getFrames()[frameId].parentId;
-      else
+      if(isMovable_) {
+        gvIndx_ = toGvIndex[system_->getFrames()[frameId].parentId];
+        gcIndx_ = toGcIndex[system_->getFrames()[frameId].parentId];
+      } else {
         gvIndx_ = -1;
+        gcIndx_ = -1;
+      }
+
+      jointType_ = system_->getFrames()[frameId].jointType;
     }
 
     void getPosition(Vec<3>& position) {
       system_->getFramePosition(frameId_, position);
     }
 
-    void getOrientation(Mat<3,3>& orientation) {
+    Mat<3,3> getOrientation() {
+      Mat<3,3> orientation;
       system_->getFrameOrientation(frameId_, orientation);
+      return orientation;
     }
 
     void getPose(Vec<3>& position, Mat<3,3>& orientation) {
@@ -171,14 +181,20 @@ class ArticulatedSystem :
     /* Joint coordinate can be multiple dimensional vector (for a spherical joint)
      * or 1D vector */
     void getJointCoordinate(VecDyn& coordinate) {
-      coordinate = system_->getGeneralizedCoordinate()[gvIndx_];
+      if(jointType_ == raisim::Joint::Type::SPHERICAL) {
+        coordinate.resize(4);
+        coordinate[0] = system_->getGeneralizedCoordinate()[gcIndx_];
+        coordinate[1] = system_->getGeneralizedCoordinate()[gcIndx_+1];
+        coordinate[2] = system_->getGeneralizedCoordinate()[gcIndx_+2];
+        coordinate[3] = system_->getGeneralizedCoordinate()[gcIndx_+3];
+      }
+
+      coordinate[0] = system_->getGeneralizedCoordinate()[gcIndx_];
     }
 
+
     double getJointAngle() {
-      if(isMovable_)
-        return system_->getGeneralizedCoordinate()[gvIndx_];
-      else
-        return 0.;
+      return system_->getGeneralizedCoordinate()[gcIndx_];
     }
 
     raisim::Vec<3>& getPositionInParentFrame() {
@@ -199,10 +215,21 @@ class ArticulatedSystem :
       return system_->getJointType(gvIndx_);
     }
 
+    size_t getIdxInGeneralizedCoordinate() {
+      return gvIndx_;
+    }
+
+    Vec<3> getLinearVelocity() {
+      Vec<3> linVel;
+      system_->getFrameVelocity(frameId_, linVel);
+      return linVel;
+    }
+
    private:
     raisim::ArticulatedSystem* system_;
-    size_t frameId_, gvIndx_;
+    size_t frameId_, gvIndx_, gcIndx_;
     bool isMovable_;
+    Joint::Type jointType_;
 
   };
 
@@ -610,12 +637,23 @@ class ArticulatedSystem :
 
   /* returns reference object of the joint*/
   JointRef getJoint(const std::string& name) {
-    return {size_t(std::find(movableJointNames.begin(), movableJointNames.end(), name)-movableJointNames.begin()), this};
+    auto index = getFrameIdxByName(name);
+    return {index, this};
   }
 
   /* returns reference object of the body*/
   LinkRef getLink(const std::string& name) {
     return {size_t(std::find(bodyName.begin(), bodyName.end(), name)-bodyName.begin()), this};
+  }
+
+  /* convert body index to gv index */
+  const std::vector<size_t>& getMappingFromBodyIndexToGeneralizedVelocityIndex() const {
+    return bodyIdx2GvIdx;
+  }
+
+  /* convert body index to gv index */
+  const std::vector<size_t>& getMappingFromBodyIndexToGeneralizedCoordinateIndex() const {
+    return bodyIdx2GcIdx;
   }
 
  protected:

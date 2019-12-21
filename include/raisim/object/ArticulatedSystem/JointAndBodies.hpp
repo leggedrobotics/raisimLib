@@ -241,10 +241,13 @@ class CoordinateFrame {
  public:
   Mat<3, 3> orientation;
   Vec<3> position;
-  size_t parentId;
-  std::string name, parentName;
+  size_t parentId, currentBodyId;
+  std::string name; // name of the joint
+  std::string parentName; // name of the parent body
+  std::string bodyName; // name of the body attached to the joint
   bool isChild =
       false; // child is the first body after movable joint. All fixed bodies attached to a child is not a child
+  Joint::Type jointType; // type of the associated joint
 };
 
 struct CollisionBody {
@@ -339,14 +342,10 @@ class Body {
   Body() {
     mass_ = 0;
     inertia_.setZero();
-    rotMat_.setIdentity();
   }
 
-  Body(double mass, const Mat<3, 3> &inertia, const Vec<3> &comPos, const Mat<3, 3> &rotMat) :
-      mass_(mass), inertia_(inertia), com_(comPos), rotMat_(rotMat) {}
-
-  Body(double mass, const Mat<3, 3> &inertia, const Vec<3> &comPos, const Vec<3> &rpy) :
-      mass_(mass), inertia_(inertia), com_(comPos) { setRPY(rpy); }
+  Body(double mass, const Mat<3, 3> &inertia, const Vec<3> &comPos) :
+      mass_(mass), inertia_(inertia), com_(comPos) {}
 
   void setMass(double mass) { mass_ = mass; }
 
@@ -412,15 +411,6 @@ class Body {
 
   Vec<3> &getCom() { return com_; }
 
-  Vec<3> &getRPY() { return rollPitchYaw; }
-
-  void setRPY(const Vec<3> &rpy) {
-    rollPitchYaw = rpy;
-    rpyToRotMat_intrinsic(rpy, rotMat_);
-  }
-
-  Mat<3, 3> &getRotMat() { return rotMat_; }
-
   void clearColAndVis() {
     colObj.clear();
     visObj.clear();
@@ -473,8 +463,8 @@ class Body {
   Mat<3, 3> combinedColRotMat;
 
   double mass_;
-  Mat<3, 3> inertia_, rotMat_;
-  Vec<3> com_, rollPitchYaw;
+  Mat<3, 3> inertia_;
+  Vec<3> com_;
 };
 
 class Child {
