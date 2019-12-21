@@ -6,8 +6,9 @@
 You must read the [LICENSE](LICENSE.md) before using this software
 
 ## News
+- As of 19/12/21, Joint and frame methods are modified. Now parent of a movable joint is itself.
 - Many remote rendering examples are added. You can use [raisimUnity](https://github.com/leggedrobotics/raisimUnity) to visualize them
-- As of Nov 12th, you can perform a ray collision test (e.g., to emulate laser sensor). It returns position, normal and the object ID.
+- As of 19/11/12, you can perform a ray collision test (e.g., to emulate laser sensor). It returns position, normal and the object ID.
 - v0.6.0 introduces new api that lets users create an ArticulatedSystem programatically. Check out the example in raisimOgre!
 - In v0.5.0, the error reduction mechanisam of Raisim is significantly improved! Please pull. No API change
 - As of v0.4.0, RAISIM can simulate any trimesh (including non-convex ones).
