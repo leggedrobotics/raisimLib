@@ -63,6 +63,16 @@ class ArticulatedSystem :
     BODY_FRAME
   };
 
+  struct SpringElement {
+    SpringElement() {
+      q_ref.setZero();
+    }
+
+    size_t childBodyId = 0; /// the spring connects this body and its parent
+    size_t stiffness = 0; /// spring stiffness
+    Vec<4> q_ref; /// mounting angles for torsional and inear springs
+  };
+
   class LinkRef {
    public:
     LinkRef(size_t localId, ArticulatedSystem* system) :
@@ -564,7 +574,6 @@ class ArticulatedSystem :
     cd_ = dampingCoefficient;
     dampedDiagonalTermUpdated_ = false;
   }
-
   void setJointDamping(const raisim::VecDyn &dampingCoefficient) {
     cd_ = dampingCoefficient;
     dampedDiagonalTermUpdated_ = false;
@@ -627,6 +636,9 @@ class ArticulatedSystem :
    * is not exactly equivalent in dynamics (due to gyroscopic effect). but it is a commonly used approximation. */
   void setRotorInertia(const VecDyn& rotorInertia) {
     rotorInertia_ = rotorInertia;
+  }
+  const VecDyn& getRotorInertia() {
+    return rotorInertia_;
   }
 
   /* This joint indices are in the same order as the elements of the generalized velocity
@@ -695,6 +707,12 @@ class ArticulatedSystem :
   void updateTimeStep(double dt) final;
 
   void updateTimeStepIfNecessary(double dt) final;
+
+  /* adding spring element */
+  void addSpring(const SpringElement& spring) { springs_.push_back(spring); }
+
+  std::vector<SpringElement>& getSprings() { return springs_; }
+  const std::vector<SpringElement>& getSprings() const { return springs_; }
 
  private:
 
@@ -799,12 +817,7 @@ class ArticulatedSystem :
 
   // damping
   VecDyn cd_;
-
-  struct SpringElement {
-    size_t childBodyId = 0;
-    size_t stiffness = 0;
-    double mountAngle = 0;
-  };
+  VecDyn cf_;
 
   std::vector<SpringElement> springs_;
 

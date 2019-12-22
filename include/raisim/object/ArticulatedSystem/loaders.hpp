@@ -167,7 +167,10 @@ struct UrdfJoint {
   Vec<3> axis;
   Vec<2> limit;
   double damping = 0;
-  double stiffness = 0, springMountPos = 0;
+  double friction = 0;
+  double stiffness = 0;
+  double rotor_inertia = 0;
+  Vec<4> springMountPos;
 };
 
 struct UrdfLink {

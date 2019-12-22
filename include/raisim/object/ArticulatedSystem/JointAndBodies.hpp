@@ -234,6 +234,10 @@ class Joint {
   Mat<3, 3> rot;
   Vec<2> limit;
   Type type;
+  double damping = 0.0, friction = 0.0;
+  double stiffness = 0.;
+  double rotor_inertia = 0.;
+  Vec<4> springMount;
   std::string name;
 };
 
