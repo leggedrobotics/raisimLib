@@ -442,7 +442,7 @@ class ArticulatedSystem :
   }
 
   /* This method only fills out non-zero elements. Make sure that the jaco is setZero() once in the initialization */
-  void getDenseOrientationalJacobian(size_t bodyIdx, Eigen::MatrixXd &jaco) {
+  void getDenseRotationalJacobian(size_t bodyIdx, Eigen::MatrixXd &jaco) {
     DRSFATAL_IF(jaco.rows() != 3 || jaco.cols() != dof, "Jacobian should be in size of 3XDOF")
     SparseJacobian sparseJaco;
     getSparseRotationalJacobian(bodyIdx, sparseJaco);
@@ -542,6 +542,8 @@ class ArticulatedSystem :
   /* set PD targets. It is effective only in the control mode "PD_PLUS_FEEDFORWARD_TORQUE".
      set any arbitrary number for unactuated degrees of freedom */
   void setPdTarget(const Eigen::VectorXd &posTarget, const Eigen::VectorXd &velTarget) {
+    RSFATAL_IF(posTarget.rows() != gcDim,"position target should have the same dimension as the generalized coordinate")
+    RSFATAL_IF(velTarget.rows() != dof, "the velocity target should have the same dimension as the degrees of freedom")
     qref_ = posTarget;
     uref_ = velTarget;
   }
