@@ -60,6 +60,8 @@ A short manual can be found here
 
 [![Watch the video](img/raisimManual.png)](https://slides.com/jeminhwangbo/raisim-manual)
 
+I am working on a new manual [here](http://raisim.com) but it is not complete.
+
 ## How to link?
 raisimLib is a cmake package. In your project CMakeList.txt,
 
