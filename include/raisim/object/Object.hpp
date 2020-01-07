@@ -46,8 +46,14 @@ class Object {
   virtual void preContactSolverUpdate1(const Vec<3> &gravity, double dt) = 0;
   virtual void preContactSolverUpdate2(const Vec<3> &gravity, double dt) = 0;
   virtual void integrate(double dt) = 0;
+
+  /// apply forces at the Center of Mass
   virtual void setExternalForce(size_t localIdx, const Vec<3>& force) = 0;
+  /// apply torque on a body
   virtual void setExternalTorque(size_t localIdx, const Vec<3>& torque) = 0;
+  /// apply force (expressed in the world frame) at specific location of the body (expressed in the body frame)
+  virtual void setExternalForce(size_t localIdx, const Vec<3>& pos, const Vec<3>& force) = 0;
+
   virtual double getMass(size_t localIdx) = 0;
   virtual ObjectType getObjectType() = 0;
   virtual void getPosition(size_t localIdx, Vec<3>& pos_w) = 0;

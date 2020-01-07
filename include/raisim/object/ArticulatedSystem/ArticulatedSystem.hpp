@@ -526,6 +526,9 @@ class ArticulatedSystem :
    * the CoordinateFrame. If the frame is World, the force is expressed in the world frame. Parent frame does not
    * make sense here*/
   void setExternalForce(size_t localIdx, size_t frameIdx, Frame frameOfForce, const Vec<3> &force);
+  void setExternalForce(size_t localIdx, const Vec<3>& pos, const Vec<3>& force) {
+    setExternalForce(localIdx, Frame::WORLD_FRAME, force, Frame::BODY_FRAME, pos);
+  }
 
   /* torque is expressed in the world frame */
   void setExternalTorque(size_t localIdx, const Vec<3> &torque_in_world_frame) final;

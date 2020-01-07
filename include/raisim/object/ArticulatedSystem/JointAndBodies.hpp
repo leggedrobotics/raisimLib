@@ -54,7 +54,8 @@ struct CollisionDefinition {
  public:
   void setMaterial(const std::string &material);
   const std::string &getMaterial();
-  const dGeomID getCollisionObject() { return colObj; }
+  const dGeomID getCollisionObject() const { return colObj; }
+  dGeomID getCollisionObject() { return colObj; }
 
   raisim::Mat<3, 3> rotOffset;
   raisim::Vec<3> posOffset;
@@ -63,7 +64,6 @@ struct CollisionDefinition {
 
  protected:
   dGeomID colObj;
-
 };
 
 typedef std::vector<CollisionDefinition> CollisionSet;

@@ -139,6 +139,7 @@ class SingleBodyObject : public Object {
   void setVelocity(double dx, double dy, double dz, double wx, double wy, double wz);
   void setExternalForce(size_t localIdx, const Vec<3>& force) final;
   void setExternalTorque(size_t localIdx, const Vec<3>& torque) final;
+  void setExternalForce(size_t localIdx, const Vec<3>& pos, const Vec<3>& force) final;
   void setGyroscopicMode(GyroscopicMode gyroscopicMode);
   void getPosition(size_t localIdx, const Vec<3>& pos_b, Vec<3>& pos_w) final;
   void getPosition(Vec<3>& pos_w) { pos_w = bodyPosition_; };

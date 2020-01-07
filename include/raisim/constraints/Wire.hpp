@@ -21,6 +21,9 @@ class Wire : public Constraints {
   /* return the length of the wire */
   double getLength();
 
+  /* return the distance between the two mounting points */
+  double getDistance();
+
   /* return the first attachment point in the World frame */
   const Vec<3>& getP1();
 
