@@ -202,8 +202,14 @@ class World {
                 CollisionGroup collisionGroup = 1,
                 CollisionGroup collisionMask = CollisionGroup(-1));
 
+  Mesh *addMesh(const Mesh* meshToClone,
+                const std::string &material = "",
+                CollisionGroup collisionGroup = 1,
+                CollisionGroup collisionMask = CollisionGroup(-1));
+
   /* returns nullptr if it doesn't find the object */
   Object *getObject(const std::string &name);
+
   raisim::Object* getObject(std::size_t worldIndex) { return objectList_[worldIndex]; }
 
   /* returns nullptr if it doesn't find the constraint */

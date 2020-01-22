@@ -18,16 +18,16 @@ class Mesh : public SingleBodyObject {
   explicit Mesh(const std::vector<float> &verticies, const std::vector<unsigned int> &idx, dSpaceID space, double mass,
                 const Mat<3, 3> &inertia, const Vec<3> &COM, double scale=1.0);
 
-  ~Mesh();
+  ~Mesh() final;
 
   // return mesh file name if it was created with a file. Otherwise, returns an empty string
-  const std::string& getMeshFileName() { return meshFileName_; }
+  const std::string& getMeshFileName() const { return meshFileName_; }
 
-  const std::vector<float>& getVerticies() { return verticies_; }
+  const std::vector<float>& getVerticies() const { return verticies_; }
 
-  const std::vector<unsigned int>& getIndicies() { return idx_; }
+  const std::vector<unsigned int>& getIndicies() const { return idx_; }
 
-  double getScale() { return scale_ ; };
+  double getScale() const { return scale_ ; };
 
   static void loadObj(const std::string &filename, std::vector<float>& verticies, std::vector<dTriIndex>& idx, double scale=1);
 

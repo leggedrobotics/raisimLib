@@ -24,39 +24,47 @@ class SingleBodyObject : public Object {
  public:
   explicit SingleBodyObject(ObjectType singleBodyObjectType);
 
-  Eigen::Vector4d getQuaternion() {
+  Eigen::Vector4d getQuaternion() const {
     Eigen::Vector4d quat;
     memcpy(quat.data(), bodyQuaternion_.ptr(), 4 * sizeof(double));
     return quat;
   };
 
-  void getQuaternion(Vec<4>& quat) {
+  void getQuaternion(Vec<4>& quat) const {
     quat = bodyQuaternion_;
   }
 
-  Eigen::Matrix3d getRotationMatrix() {
+  Eigen::Matrix3d getRotationMatrix() const {
     Eigen::Matrix3d rot;
     memcpy(rot.data(), bodyRotationMatrix_.ptr(), 9 * sizeof(double));
     return rot;
   };
 
-  void getRotationMatrix(Mat<3,3>& rotation) {
+  void getRotationMatrix(Mat<3,3>& rotation) const {
     rotation = bodyRotationMatrix_;
   }
 
-  Eigen::Vector3d getPosition() {
+  Eigen::Vector3d getPosition() const {
     Eigen::Vector3d pos;
     memcpy(pos.data(), bodyPosition_.ptr(), 3 * sizeof(double));
     return pos;
   };
 
-  Eigen::Vector3d getComPosition() {
+  Eigen::Vector3d getComPosition() const {
     Eigen::Vector3d pos;
     memcpy(pos.data(), comPosition_.ptr(), 3 * sizeof(double));
     return pos;
   };
 
-  Eigen::Vector3d getLinearVelocity() {
+  const raisim::Vec<3>& getComPosition_rs() const {
+    return comPosition_;
+  };
+
+  const raisim::Vec<3>& getBodyToComPosition_rs() const {
+    return body2com_;
+  };
+
+  Eigen::Vector3d getLinearVelocity() const {
     Eigen::Vector3d vel;
     memcpy(vel.data(), linVel_.ptr(), 3 * sizeof(double));
     return vel;
@@ -64,7 +72,7 @@ class SingleBodyObject : public Object {
 
   void getLinearVelocity(Vec<3>& linVel) { linVel = linVel_; }
 
-  Eigen::Vector3d getAngularVelocity(){
+  Eigen::Vector3d getAngularVelocity() const {
     Eigen::Vector3d vel;
     memcpy(vel.data(), angVel_.ptr(), 3 * sizeof(double));
     return vel;
@@ -72,33 +80,41 @@ class SingleBodyObject : public Object {
 
   void getAngularVelocity(Vec<3>& angVel) { angVel = angVel_; }
 
-  void getPosition(size_t localIdx, Vec<3>& pos_w) {
+  void getPosition(size_t localIdx, Vec<3>& pos_w) const final {
     pos_w = bodyPosition_;
   }
 
-  void getOrientation(size_t localIdx, Mat<3,3>& rot) {
+  void getOrientation(size_t localIdx, Mat<3,3>& rot) const final {
     rot = bodyRotationMatrix_;
   }
 
-  double getKineticEnergy();
-  double getPotentialEnergy(const Vec<3> &gravity);
-  double getEnergy(const Vec<3> &gravity);
+  double getKineticEnergy() const;
+  double getPotentialEnergy(const Vec<3> &gravity) const;
+  double getEnergy(const Vec<3> &gravity) const;
   const Eigen::Vector3d getLinearMomentum();
-  double getMass(size_t localIdx) final;
+  double getMass(size_t localIdx) const;
 
-  Eigen::Matrix3d getInertiaMatrix_B() {
+  Eigen::Matrix3d getInertiaMatrix_B() const {
     Eigen::Matrix3d iner;
     memcpy(iner.data(), inertia_b_.ptr(), 9 * sizeof(double));
     return iner;
   }
 
-  Eigen::Matrix3d getInertiaMatrix_W() {
+  Eigen::Matrix3d getInertiaMatrix_W() const {
     Eigen::Matrix3d iner;
     memcpy(iner.data(), inertia_w_.ptr(), 9 * sizeof(double));
     return iner;
   }
 
-  ObjectType getObjectType() final;
+  const raisim::Mat<3,3>& getInertiaMatrix_B_rs() const {
+    return inertia_b_;
+  }
+
+  const raisim::Mat<3,3>& getInertiaMatrix_W_rs() const {
+    return inertia_w_;
+  }
+
+  ObjectType getObjectType() const final;
 
   dGeomID getCollisionObject() const;
 
@@ -141,9 +157,9 @@ class SingleBodyObject : public Object {
   void setExternalTorque(size_t localIdx, const Vec<3>& torque) final;
   void setExternalForce(size_t localIdx, const Vec<3>& pos, const Vec<3>& force) final;
   void setGyroscopicMode(GyroscopicMode gyroscopicMode);
-  void getPosition(size_t localIdx, const Vec<3>& pos_b, Vec<3>& pos_w) final;
+  void getPosition(size_t localIdx, const Vec<3>& pos_b, Vec<3>& pos_w) const final;
   void getPosition(Vec<3>& pos_w) { pos_w = bodyPosition_; };
-  void getVelocity(size_t localIdx, Vec<3>& vel_w) final { vel_w = linVel_; }
+  void getVelocity(size_t localIdx, Vec<3>& vel_w) const final { vel_w = linVel_; }
 
   void preContactSolverUpdate1(const Vec<3> &gravity, double dt) final;
   void preContactSolverUpdate2(const Vec<3> &gravity, double dt) final;
@@ -161,7 +177,7 @@ class SingleBodyObject : public Object {
 
  protected:
 
-  virtual void destroyCollisionBodies(dSpaceID id);
+  virtual void destroyCollisionBodies(dSpaceID id) override ;
   void updateWorldInertia();
   void addContactPointVel(size_t pointId, Vec<3>& vel) final;
   void subContactPointVel(size_t pointId, Vec<3>& vel) final;

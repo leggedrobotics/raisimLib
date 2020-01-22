@@ -42,6 +42,8 @@ class Object {
 
   size_t getIndexInWorld() const;
   const std::vector<contact::Contact> &getContacts() const;
+  std::vector<contact::Contact> &getContacts();
+
   virtual void updateCollision() = 0;
   virtual void preContactSolverUpdate1(const Vec<3> &gravity, double dt) = 0;
   virtual void preContactSolverUpdate2(const Vec<3> &gravity, double dt) = 0;
@@ -54,13 +56,12 @@ class Object {
   /// apply force (expressed in the world frame) at specific location of the body (expressed in the body frame)
   virtual void setExternalForce(size_t localIdx, const Vec<3>& pos, const Vec<3>& force) = 0;
 
-  virtual double getMass(size_t localIdx) = 0;
-  virtual ObjectType getObjectType() = 0;
-  virtual void getPosition(size_t localIdx, Vec<3>& pos_w) = 0;
-  virtual void getVelocity(size_t localIdx, Vec<3>& vel_w) = 0;
-  virtual void getOrientation(size_t localIdx, Mat<3,3>& rot) = 0;
-  virtual void getPosition(size_t localIdx, const Vec<3>& pos_b, Vec<3>& pos_w) = 0;
-  std::vector<contact::Contact> &getContacts();
+  virtual double getMass(size_t localIdx) const = 0;
+  virtual ObjectType getObjectType() const = 0;
+  virtual void getPosition(size_t localIdx, Vec<3>& pos_w) const = 0;
+  virtual void getVelocity(size_t localIdx, Vec<3>& vel_w) const = 0;
+  virtual void getOrientation(size_t localIdx, Mat<3,3>& rot) const = 0;
+  virtual void getPosition(size_t localIdx, const Vec<3>& pos_b, Vec<3>& pos_w) const = 0;
   virtual BodyType getBodyType(size_t localIdx) const { return bodyType_; };
   virtual BodyType getBodyType() const { return bodyType_; };
   virtual void getContactPointVel(size_t pointId, Vec<3> &vel) = 0;

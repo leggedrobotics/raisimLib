@@ -376,7 +376,7 @@ class ArticulatedSystem :
   const std::vector<std::string>& getMovableJointNames() const {return movableJointNames; };
 
   /* returns position in the world frame of a point defined in a joint frame*/
-  void getPosition(size_t bodyIdx, const Vec<3> &point_B, Vec<3> &point_W) final;
+  void getPosition(size_t bodyIdx, const Vec<3> &point_B, Vec<3> &point_W) const final;
 
   /* CoordinateFrame contains the pose relative to its parent expressed in the parent frame.
      If you want the position expressed in the world frame,
@@ -385,30 +385,30 @@ class ArticulatedSystem :
      you have to get the parent body orientation and pre-multiply it by the relative orientation*/
   CoordinateFrame &getFrameByName(const std::string &nm);
   CoordinateFrame &getFrameByIdx(size_t idx);
-  size_t getFrameIdxByName(const std::string &nm);
+  size_t getFrameIdxByName(const std::string &nm) const;
   std::vector<CoordinateFrame> &getFrames();
 
   /* returns position and orientation in the world frame of a frame defined in the robot description
    * Frames are attached to the joint position */
-  void getFramePosition(size_t frameId, Vec<3> &point_W);
-  void getFrameOrientation(size_t frameId, Mat<3, 3> &orientation_W);
-  void getFrameVelocity(size_t frameId, Vec<3> &vel_W);
-  void getFrameAngularVelocity(size_t frameId, Vec<3> &angVel_W);
+  void getFramePosition(size_t frameId, Vec<3> &point_W) const;
+  void getFrameOrientation(size_t frameId, Mat<3, 3> &orientation_W) const;
+  void getFrameVelocity(size_t frameId, Vec<3> &vel_W) const;
+  void getFrameAngularVelocity(size_t frameId, Vec<3> &angVel_W) const;
 
-  void getFramePosition(const CoordinateFrame& frame, Vec<3> &point_W);
-  void getFrameOrientation(const CoordinateFrame& frame, Mat<3, 3> &orientation_W);
-  void getFrameVelocity(const CoordinateFrame& frame, Vec<3> &vel_W);
-  void getFrameAngularVelocity(const CoordinateFrame& frame, Vec<3> &angVel_W);
+  void getFramePosition(const CoordinateFrame& frame, Vec<3> &point_W) const;
+  void getFrameOrientation(const CoordinateFrame& frame, Mat<3, 3> &orientation_W) const;
+  void getFrameVelocity(const CoordinateFrame& frame, Vec<3> &vel_W) const;
+  void getFrameAngularVelocity(const CoordinateFrame& frame, Vec<3> &angVel_W) const;
 
 
   /* returns the position of the joint frame */
-  void getPosition(size_t localIdx, Vec<3> &pos_w) final { pos_w = jointPos_W[localIdx]; }
+  void getPosition(size_t localIdx, Vec<3> &pos_w) const final { pos_w = jointPos_W[localIdx]; }
 
   /* returns the orientation of the joint frame */
-  void getOrientation(size_t localIdx, Mat<3, 3> &rot) final { rot = rot_WB[localIdx]; }
+  void getOrientation(size_t localIdx, Mat<3, 3> &rot) const final { rot = rot_WB[localIdx]; }
 
   /* returns the linear velocity of the joint frame*/
-  void getVelocity(size_t localIdx, Vec<3> &vel_w) final { vel_w = bodyLinearVel_W[localIdx]; }
+  void getVelocity(size_t localIdx, Vec<3> &vel_w) const final { vel_w = bodyLinearVel_W[localIdx]; }
 
   /* Unless otherwise specified, Jacobians map the generalized velocities to the linear velocities of the given point
    expressed in the World frame. */
@@ -452,10 +452,10 @@ class ArticulatedSystem :
   }
 
   /* returns the velocity of the point of the jacobian*/
-  void getVelocity(const SparseJacobian &jaco, Vec<3> &pointVel);
+  void getVelocity(const SparseJacobian &jaco, Vec<3> &pointVel) const;
 
   /* returns the velocity of {a point on the body expressed} in the world frame */
-  void getVelocity(size_t bodyId, const Vec<3> &posInBodyFrame, Vec<3> &pointVel);
+  void getVelocity(size_t bodyId, const Vec<3> &posInBodyFrame, Vec<3> &pointVel) const;
 
   /* returns the angular velocity of the body*/
   void getAngularVelocity(size_t bodyId, Vec<3> &angVel);
@@ -510,7 +510,7 @@ class ArticulatedSystem :
   void updateMassInfo();
 
   /* get link mass */
-  double getMass(size_t localIdx) final { return mass[localIdx]; }
+  double getMass(size_t localIdx) const final { return mass[localIdx]; }
 
   /* set link mass */
   void setMass(size_t localIdx, double value) { mass[localIdx] = value; }
@@ -683,7 +683,7 @@ class ArticulatedSystem :
 
   void updateCollision() final;
 
-  ObjectType getObjectType() final { return ARTICULATED_SYSTEM; }
+  ObjectType getObjectType() const final { return ARTICULATED_SYSTEM; }
 
   BodyType getBodyType(size_t localIdx) const final;
 
