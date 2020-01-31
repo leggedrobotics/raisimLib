@@ -122,6 +122,12 @@ class World {
                           CollisionGroup collisionGroup = 1,
                           CollisionGroup collisionMask = CollisionGroup(-1));
 
+  /* Height map files are written in the following format
+   *
+   * number_of_x_samples number_of_y_samples xSize ySize
+   * height_values
+   *
+   * check raisimOgre heightMap.cpp for an example */
   HeightMap *addHeightMap(const std::string &raisimHeightMapFileName,
                           double centerX,
                           double centerY,
@@ -202,6 +208,7 @@ class World {
                 CollisionGroup collisionGroup = 1,
                 CollisionGroup collisionMask = CollisionGroup(-1));
 
+  /* copies material as well if it left empty */
   Mesh *addMesh(const Mesh* meshToClone,
                 const std::string &material = "",
                 CollisionGroup collisionGroup = 1,
