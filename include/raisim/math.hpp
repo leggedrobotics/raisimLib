@@ -516,10 +516,42 @@ class MatDyn: public DynamicArray {
         v[n * (startColumn + i) + (o + startRow)] = in[i * j + o];
   }
 
-  void fillSub(size_t startRow, size_t startColumn, Mat<3, 3> &in) {
-    for (size_t i = 0; i < 3; i++) /// column index
-      for (size_t o = 0; o < 3; o++) /// row index
-        v[n * (startColumn + i) + (o + startRow)] = in[i * 3 + o];
+  void fillSubSkewSym(size_t startRow, size_t startColumn, Vec<3> &in) {
+    v[n * (startColumn) + (1 + startRow)] = in[2];
+    v[n * (startColumn) + (2 + startRow)] = -in[1];
+    v[n * (startColumn + 1) + (startRow)] = -in[2];
+    v[n * (startColumn + 1) + (2 + startRow)] = in[0];
+    v[n * (startColumn + 2) + (0 + startRow)] = in[1];
+    v[n * (startColumn + 2) + (1 + startRow)] = -in[0];
+  }
+
+  void fillSubSkewSymTransposed(size_t startRow, size_t startColumn, Vec<3> &in) {
+    v[n * (startColumn) + (1 + startRow)] = -in[2];
+    v[n * (startColumn) + (2 + startRow)] = in[1];
+    v[n * (startColumn + 1) + (startRow)] = in[2];
+    v[n * (startColumn + 1) + (2 + startRow)] = -in[0];
+    v[n * (startColumn + 2) + (0 + startRow)] = -in[1];
+    v[n * (startColumn + 2) + (1 + startRow)] = in[0];
+  }
+
+
+  template<size_t j, size_t k>
+  void fillSubTransposed(size_t startRow, size_t startColumn, Mat<j, k> &in) {
+    for (size_t i = 0; i < j; i++) /// column index
+      for (size_t o = 0; o < k; o++) /// row index
+        v[n * (startColumn + i) + (o + startRow)] = in[i + o * j];
+  }
+
+  template<size_t j>
+  void fillSub(size_t startRow, size_t startColumn, Vec<j> &in) {
+    for (size_t o = 0; o < j; o++) /// row index
+      operator()(startRow+o, startColumn) = in[o];
+  }
+
+  template<size_t j>
+  void fillSubTransposed(size_t startRow, size_t startColumn, Vec<j> &in) {
+    for (size_t o = 0; o < j; o++) /// row index
+      operator()(startRow, startColumn+o) = in[o];
   }
 
   void setIdentity() {
@@ -917,21 +949,22 @@ inline void quatToEulerVec(const double* quat, double* eulerVec) {
   eulerVec[2] = quat[3] * angleNomrInv;
 }
 
-
-template<size_t n, size_t m, size_t l>
-inline void matmul(const Mat<n, m> &mat1, const Mat<n, l> &mat2, Mat<l, m> &mat) {
-  mat.setZero();
-  for (size_t j = 0; j < m; j++) // col
-    for (size_t k = 0; k < n; k++) // row
-      for (size_t i=0; i<l; i++)
-        mat[j * n + k] += mat1[i*n+k] * mat2[i+l*j];
-}
-
 inline void matmul(const Mat<3, 3> &mat1, const Mat<3, 3> &mat2, Mat<3, 3> &mat) {
   for (size_t j = 0; j < 3; j++) // col
     for (size_t k = 0; k < 3; k++) // row
-      mat[j * 3 + k] =
-          mat1[k] * mat2[j * 3] + mat1[k + 3] * mat2[j * 3 + 1] + mat1[k + 6] * mat2[j * 3 + 2];
+      mat(k, j) = mat1(k, 0) * mat2(0, j) + mat1(k, 1) * mat2(1, j) + mat1(k, 2) * mat2(2, j);
+}
+
+inline void matmattransposemul(const Mat<3, 3> &mat1, const Mat<3, 3> &mat2, Mat<3, 3> &mat) {
+  for (size_t j = 0; j < 3; j++) // col
+    for (size_t k = 0; k < 3; k++) // row
+      mat(k, j) = mat1(k, 0) * mat2(j, 0) + mat1(k, 1) * mat2(j, 1) + mat1(k, 2) * mat2(j, 2);
+}
+
+inline void mattransposematmul(const Mat<3, 3> &mat1, const Mat<3, 3> &mat2, Mat<3, 3> &mat) {
+  for (size_t j = 0; j < 3; j++) // col
+    for (size_t k = 0; k < 3; k++) // row
+      mat(k, j) =  mat1(0, k) * mat2(0, j) + mat1(1, k) * mat2(1, j) + mat1(2, k) * mat2(2, j);
 }
 
 inline void rotmatmul(const Mat<3, 3> &mat1, const Mat<3, 3> &mat2, Mat<3, 3> &mat) {
@@ -1030,6 +1063,38 @@ inline void similarityTransform(const Mat<3, 3> &R, const Mat<3, 3> &I, Mat<3, 3
   mat[6] = mat[2];
   mat[7] = mat[5];
   mat[8] = R[2]*t02 + R[5]*t12 + R[8]*t22;
+//  std::cout<<test.e()<<"\n";
+//  std::cout<<mat.e()<<"\n\n";
+}
+
+
+/// computes R^TIR
+inline void similarityTransform2(const Mat<3, 3> &R, const Mat<3, 3> &I, Mat<3, 3> &mat) {
+//  Mat<3, 3> temp;
+//  transposed2MatMul(I, R, temp);
+//  matmul(R, temp, mat);
+
+  const double t00 = R[0]*I[0]+R[1]*I[3]+R[2]*I[6];
+  const double t10 = R[0]*I[1]+R[1]*I[4]+R[2]*I[7];
+  const double t20 = R[0]*I[2]+R[1]*I[5]+R[2]*I[8];
+
+  const double t01 = R[3]*I[0]+R[4]*I[1]+R[5]*I[2];
+  const double t11 = R[3]*I[1]+R[4]*I[4]+R[5]*I[5];
+  const double t21 = R[3]*I[2]+R[4]*I[5]+R[5]*I[8];
+
+  const double t02 = R[6]*I[0]+R[7]*I[1]+R[8]*I[2];
+  const double t12 = R[6]*I[1]+R[7]*I[4]+R[8]*I[5];
+  const double t22 = R[6]*I[2]+R[7]*I[5]+R[8]*I[8];
+
+  mat[0] = R[0]*t00 + R[1]*t10 + R[2]*t20;
+  mat[1] = R[3]*t00 + R[4]*t10 + R[5]*t20;
+  mat[2] = R[6]*t00 + R[7]*t10 + R[8]*t20;
+  mat[3] = mat[1];
+  mat[4] = R[3]*t01 + R[4]*t11 + R[5]*t21;
+  mat[5] = R[6]*t01 + R[7]*t11 + R[8]*t21;
+  mat[6] = mat[2];
+  mat[7] = mat[5];
+  mat[8] = R[6]*t02 + R[7]*t12 + R[8]*t22;
 //  std::cout<<test.e()<<"\n";
 //  std::cout<<mat.e()<<"\n\n";
 }
@@ -1445,7 +1510,7 @@ inline void skewSymMat(const Vec<3> &vec, Mat<3,3> &mat) {
   mat[3] = -vec[2];
   mat[5] = vec[0];
   mat[6] = vec[1];
-  mat[7] = vec[0];
+  mat[7] = -vec[0];
 }
 
 inline void vecTransposeMatVecMul(const Vec<3> &vec, const Mat<3, 3> &mat, double &scalar) {

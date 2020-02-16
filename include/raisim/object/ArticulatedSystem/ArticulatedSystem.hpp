@@ -333,7 +333,12 @@ class ArticulatedSystem :
 
   /* for both the generalized coordinate and the generalized velocity */
   void getState(Eigen::VectorXd &genco, Eigen::VectorXd &genvel) { genco = gc_.e(); genvel = gv_.e();}
-  void setState(const Eigen::VectorXd &genco, const Eigen::VectorXd &genvel);
+  void setState(const Eigen::VectorXd &genco, const Eigen::VectorXd &genvel) {
+    gc_ = genco;
+    gv_ = genvel;
+    updateKinematics();
+    cleanContacts();
+  }
 
   /* get dynamics properties. Make sure that after integration you call "integrate1()" of the world object before using this method" */
   /* Generalized force is the actual force */
@@ -621,8 +626,28 @@ class ArticulatedSystem :
 
   /* change the base position and orientation of the base. */
   /* eigen methods. _e is for removing abiguity */
-  void setBasePos_e(const Eigen::Vector3d& pos);
-  void setBaseOrientation_e(const Eigen::Matrix3d& rot);
+  void setBasePos_e(const Eigen::Vector3d& pos) {
+    if(jointType[0]==Joint::FIXED)
+      jointPos_W[0].e() = pos;
+    else {
+      gc_[0] = pos[0]; gc_[1] = pos[1]; gc_[2] = pos[2];
+    }
+    updateKinematics();
+  }
+
+  void setBaseOrientation_e(const Eigen::Matrix3d& rot) {
+    if(jointType[0]==Joint::FIXED)
+      rot_WB[0].e() = rot;
+    else {
+      Mat<3,3> rotMat;
+      Vec<4> quat;
+      rotMat.e() = rot;
+      rotMatToQuat(rotMat, quat);
+      gc_.fillSegment(quat, 3);
+    }
+    updateKinematics();
+  }
+
   /* raisim vec methods */
   void setBasePos(const Vec<3>& pos);
   void setBaseOrientation(const Mat<3,3>& rot);
@@ -831,7 +856,7 @@ class ArticulatedSystem :
   VecDyn rotorInertia_;
   VecDyn generalizedMomentum_;
   VecDyn temp, temp2;
-  MatDyn temp1;
+  MatDyn Mtemp_;
   std::string resourceDir_, robotDefFileName_, robotDefFileUpperDir_, robotDef_;
 
   // for Trimesh

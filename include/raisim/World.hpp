@@ -263,6 +263,8 @@ class World {
   std::vector<Object *> &getObjList();
 
   void setGravity(const Vec<3> &gravity);
+
+  /* this deletes the existing material props and replace them with the argument */
   void updateMaterialProp(const MaterialManager &prop);
 
   void setMaterialPairProp(const std::string &mat1,
