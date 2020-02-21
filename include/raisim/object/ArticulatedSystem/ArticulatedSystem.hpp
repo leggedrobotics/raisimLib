@@ -441,7 +441,7 @@ class ArticulatedSystem :
     DRSFATAL_IF(jaco.rows() != 3 || jaco.cols() != dof, "Jacobian should be in size of 3XDOF")
     SparseJacobian sparseJaco;
     getSparseJacobian(bodyIdx, point_W, sparseJaco);
-    for (size_t i = 0; i < jaco.size(); i++)
+    for (size_t i = 0; i < sparseJaco.size; i++)
       for (size_t j = 0; j < 3; j++)
         jaco(j, sparseJaco.idx[i]) = sparseJaco[i * 3 + j];
   }
@@ -451,7 +451,7 @@ class ArticulatedSystem :
     DRSFATAL_IF(jaco.rows() != 3 || jaco.cols() != dof, "Jacobian should be in size of 3XDOF")
     SparseJacobian sparseJaco;
     getSparseRotationalJacobian(bodyIdx, sparseJaco);
-    for (size_t i = 0; i < jaco.size(); i++)
+    for (size_t i = 0; i < sparseJaco.size; i++)
       for (size_t j = 0; j < 3; j++)
         jaco(j, sparseJaco.idx[i]) = sparseJaco[i * 3 + j];
   }
