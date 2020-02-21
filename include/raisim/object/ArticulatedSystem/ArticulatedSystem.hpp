@@ -438,20 +438,20 @@ class ArticulatedSystem :
 
   /* This method only fills out non-zero elements. Make sure that the jaco is setZero() once in the initialization */
   void getDenseJacobian(size_t bodyIdx, const Vec<3> &point_W, Eigen::MatrixXd &jaco) {
-    DRSFATAL_IF(jaco.rows() != 3 || jaco.cols() != dof, "Jacobian should be in size of 3XDOF")
+    DRSFATAL_IF(jaco.rows() != 3 || jaco.cols() != dof, "Jacobian should be in size of 3 by DOF")
     SparseJacobian sparseJaco;
     getSparseJacobian(bodyIdx, point_W, sparseJaco);
-    for (size_t i = 0; i < jaco.size(); i++)
+    for (size_t i = 0; i < sparseJaco.size; i++)
       for (size_t j = 0; j < 3; j++)
         jaco(j, sparseJaco.idx[i]) = sparseJaco[i * 3 + j];
   }
 
   /* This method only fills out non-zero elements. Make sure that the jaco is setZero() once in the initialization */
   void getDenseRotationalJacobian(size_t bodyIdx, Eigen::MatrixXd &jaco) {
-    DRSFATAL_IF(jaco.rows() != 3 || jaco.cols() != dof, "Jacobian should be in size of 3XDOF")
+    DRSFATAL_IF(jaco.rows() != 3 || jaco.cols() != dof, "Jacobian should be in size of 3 by DOF")
     SparseJacobian sparseJaco;
     getSparseRotationalJacobian(bodyIdx, sparseJaco);
-    for (size_t i = 0; i < jaco.size(); i++)
+    for (size_t i = 0; i < sparseJaco.size; i++)
       for (size_t j = 0; j < 3; j++)
         jaco(j, sparseJaco.idx[i]) = sparseJaco[i * 3 + j];
   }
