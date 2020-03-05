@@ -94,6 +94,10 @@ class SingleBodyObject : public Object {
   const Eigen::Vector3d getLinearMomentum();
   double getMass(size_t localIdx) const;
 
+  void setMass(double mass) {
+    mass_ = mass; inverseMass_ = 1./mass;
+  }
+
   Eigen::Matrix3d getInertiaMatrix_B() const {
     Eigen::Matrix3d iner;
     memcpy(iner.data(), inertia_b_.ptr(), 9 * sizeof(double));
