@@ -6,7 +6,7 @@
 You must read the [LICENSE](LICENSE.md) before using this software
 
 ## News
-- I am preparing RaiSim v1.0! now the updates are slow but big improvements are coming! (around May)
+- **I am preparing RaiSim v1.0! now the updates are slow but big improvements are coming! (around June)**
 - As of 19/12/22, joint/dynamics element in a URDF can have "damping", "stiffness", "spring_mount", and "rotor_inertia"
 - As of 19/12/21, Joint and frame methods are modified. Now parent of a movable joint is itself.
 - As of 19/11/12, you can perform a ray collision test (e.g., to emulate laser sensor). It returns position, normal and the object ID.
