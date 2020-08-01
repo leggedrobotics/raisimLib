@@ -54,7 +54,7 @@ In no event shall ETH Zurich be liable for any damages (including, without limit
 The above limitation of liability shall not be construed to amend or limit any Party’s statutory liability.
 
 10. **DURATION OF LICENSE**\
-This EULA is valid from the date of acceptance of this EULA until **August 1st, 2020** (“license duration”). In addition, Your rights under this EULA will terminate automatically without notice from ETH Zurich if you fail to comply with any term(s) of this EULA. Upon the earlier of (a) lapse of the license duration or (b) termination of the EULA due to your non-compliance with terms of this EULA, you shall cease all use of the SOFTWARE and destroy all copies, full or partial, of the SOFTWARE.
+This EULA is valid from the date of acceptance of this EULA until **November 1st, 2020** (“license duration”). In addition, Your rights under this EULA will terminate automatically without notice from ETH Zurich if you fail to comply with any term(s) of this EULA. Upon the earlier of (a) lapse of the license duration or (b) termination of the EULA due to your non-compliance with terms of this EULA, you shall cease all use of the SOFTWARE and destroy all copies, full or partial, of the SOFTWARE.
 
 11. **GENERAL PROVISIONS**\
     (i) ETH Zurich reserves the right to change the terms and conditions of this EULA at any point in time. In such event, ETH Zurich will notify You in due time of the changes to the terms of the EULA.\

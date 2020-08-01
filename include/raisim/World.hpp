@@ -24,14 +24,12 @@
 #include "raisim/Terrain.hpp"
 #include "raisim/contact/BisectionContactSolver.hpp"
 #include "raisim/object/ArticulatedSystem/ArticulatedSystem.hpp"
+#include "raisim/rayCollision.hpp"
 #include "ode/collision.h"
 #include "configure.hpp"
 
+
 namespace raisim {
-  struct RayCollisionList {
-    size_t size = 0;
-    dContactGeom geoms[200];
-  };
 
 class World {
 
@@ -57,6 +55,8 @@ class World {
 
   explicit World();
   explicit World(const std::string &configFile);
+  void init();
+
   void exportToXml(const std::string &xmlFileName);
 
   World(const World &world) = delete;
@@ -219,6 +219,7 @@ class World {
 
   raisim::Object* getObject(std::size_t worldIndex) { return objectList_[worldIndex]; }
 
+
   /* returns nullptr if it doesn't find the constraint */
   Constraints *getConstraint(const std::string &name);
 
@@ -235,6 +236,7 @@ class World {
   const RayCollisionList& rayTest(const Eigen::Vector3d& start,
                                   const Eigen::Vector3d& direction,
                                   double length,
+                                  bool closestOnly = false,
                                   CollisionGroup collisionGroup = 1,
                                   CollisionGroup collisionMask = CollisionGroup(-1));
 
@@ -334,6 +336,7 @@ protected:
 
   // ray test
   RayCollisionList rayContact_;
+
 };
 
 } // raisim

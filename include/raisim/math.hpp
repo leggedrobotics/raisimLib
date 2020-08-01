@@ -510,13 +510,13 @@ class MatDyn: public DynamicArray {
   }
 
   template<size_t j, size_t k>
-  void fillSub(size_t startRow, size_t startColumn, Mat<j, k> &in) {
+  void fillSub(size_t startRow, size_t startColumn, const Mat<j, k> &in) {
     for (size_t i = 0; i < j; i++) /// column index
       for (size_t o = 0; o < k; o++) /// row index
         v[n * (startColumn + i) + (o + startRow)] = in[i * j + o];
   }
 
-  void fillSubSkewSym(size_t startRow, size_t startColumn, Vec<3> &in) {
+  void fillSubSkewSym(size_t startRow, size_t startColumn, const Vec<3> &in) {
     v[n * (startColumn) + (1 + startRow)] = in[2];
     v[n * (startColumn) + (2 + startRow)] = -in[1];
     v[n * (startColumn + 1) + (startRow)] = -in[2];
@@ -536,20 +536,20 @@ class MatDyn: public DynamicArray {
 
 
   template<size_t j, size_t k>
-  void fillSubTransposed(size_t startRow, size_t startColumn, Mat<j, k> &in) {
+  void fillSubTransposed(size_t startRow, size_t startColumn, const Mat<j, k> &in) {
     for (size_t i = 0; i < j; i++) /// column index
       for (size_t o = 0; o < k; o++) /// row index
         v[n * (startColumn + i) + (o + startRow)] = in[i + o * j];
   }
 
   template<size_t j>
-  void fillSub(size_t startRow, size_t startColumn, Vec<j> &in) {
+  void fillSub(size_t startRow, size_t startColumn, const Vec<j> &in) {
     for (size_t o = 0; o < j; o++) /// row index
       operator()(startRow+o, startColumn) = in[o];
   }
 
   template<size_t j>
-  void fillSubTransposed(size_t startRow, size_t startColumn, Vec<j> &in) {
+  void fillSubTransposed(size_t startRow, size_t startColumn, const Vec<j> &in) {
     for (size_t o = 0; o < j; o++) /// row index
       operator()(startRow, startColumn+o) = in[o];
   }
@@ -630,6 +630,9 @@ class SparseJacobian {
   double operator [](size_t i) const    {return v[i];}
   double & operator [](size_t i) {return v[i];}
 
+  inline double operator ()(size_t i, size_t j) const { return v[i+j*3]; }
+  inline double & operator ()(size_t i, size_t j) { return v[i+j*3]; }
+
   inline void operator*=(double val) {
     v *= val;
   }
@@ -643,6 +646,11 @@ class SparseJacobian {
 
   const Eigen::Map<const Eigen::Matrix<double, -1, -1> > e() const {
     return Eigen::Map<const Eigen::Matrix<double, -1, -1> >(v.ptr(), 3, size);
+  }
+
+  template<size_t j, size_t k>
+  void fillSub(size_t startRow, size_t startColumn, const Mat<j, k> &in) {
+    v.fillSub(startRow, startColumn, in);
   }
 
   inline SparseJacobian& operator=(const SparseJacobian &rhs) {

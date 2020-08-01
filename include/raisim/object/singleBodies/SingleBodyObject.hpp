@@ -94,7 +94,7 @@ class SingleBodyObject : public Object {
   const Eigen::Vector3d getLinearMomentum();
   double getMass(size_t localIdx) const;
 
-  void setMass(double mass) {
+  inline void setMass(double mass) {
     mass_ = mass; inverseMass_ = 1./mass;
   }
 

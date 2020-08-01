@@ -42,6 +42,8 @@ class HeightMap : public SingleBodyObject {
   const std::vector<double> &getHeightMap() const;
 
   double getHeight(double x, double y) const;
+  void getNormal(double x, double y, Vec<3>& normal) const;
+
   void destroyCollisionBodies(dSpaceID id) final;
 
   size_t getXSamples() const { return xSamples_; }

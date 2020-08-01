@@ -1103,6 +1103,7 @@ ODE_API_DEPRECATED ODE_API int dGeomTransformGetInfo (dGeomID g);
 struct dxHeightfieldData;
 typedef struct dxHeightfieldData* dHeightfieldDataID;
 dReal dxgetHeightFromHeightField(dxHeightfieldData* hf, double x, double z);
+void dxgetNormalFromHeightField(dxHeightfieldData* hf, double x, double z, double* normal);
 
 
 /**
