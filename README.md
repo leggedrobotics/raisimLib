@@ -6,7 +6,7 @@
 You must read the [LICENSE](LICENSE.md) before using this software
 
 ## News
-- **The old license is expired so I prolonged it for 3 months. You have to pull to continue using raisim. I will soon release v1.0!**
+- **The old license is expired so I prolonged it for 3 more months. You have to pull to continue using raisim. I will soon release v1.0!**
 - **I am preparing RaiSim v1.0! updates are slow now but big improvements are coming! (around June)**
 - As of 19/12/22, joint/dynamics element in a URDF can have "damping", "stiffness", "spring_mount", and "rotor_inertia"
 - As of 19/12/21, Joint and frame methods are modified. Now parent of a movable joint is itself.
