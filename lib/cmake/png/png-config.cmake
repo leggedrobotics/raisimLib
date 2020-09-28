@@ -10,7 +10,7 @@ if(NOT TARGET raisim::png)
   get_target_property(png_LIBRARIES raisim::png IMPORTED_LOCATION)
 
   # NOTE: Checks need to happen at least once when the package is first imported
-  find_package_handle_standard_args(raisim::png
+  find_package_handle_standard_args(png
     REQUIRED_VARS
       png_INCLUDE_DIRS
       png_LIBRARIES
